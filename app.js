@@ -10,6 +10,7 @@ var tripsRouter = require('./routes/trips');
 var placesRouter = require('./routes/places');
 
 var app = express();
+
 const mongoose = require('mongoose');
 mongoose.Promise = Promise;
 mongoose.connect(process.env.MONGODB_URI ||'mongodb://localhost/travelLog');
