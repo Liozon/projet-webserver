@@ -1,0 +1,19 @@
+{
+  "name": "projet-webserver",
+  "version": "1.0.0",
+  "description": "Dans le cadre du cours WebServer de troisième et denière année de Bachelor, nous avons créé une API.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Liozon/projet-webserver.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Liozon/projet-webserver/issues"
+  },
+  "homepage": "https://github.com/Liozon/projet-webserver#readme"
+}
