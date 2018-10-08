@@ -8,14 +8,14 @@ var express = require('express');
 var app = express();
 
 //setup mongoDB
-var mongodb = require('mongodb');
-var MongoClient = mongodb.MongoClient;
+const MongoClient = require('mongodb').MongoClient;
 
 // Database name
 var dbName = 'travelLog';
 
 // Connection URL
 var connectionString = 'mongodb://localhost:27017/' + dbName;
+
 
 //connect database to server
 var database = {
@@ -29,21 +29,10 @@ var database = {
             console.log("Connected successfully to server");
             var db = connection.db(dbName);
             connection.close();
+            callback();
         });
     },
-
-    //drops all DB collections
-    deleteDBData() {
-        MongoClient.connect(connectionString, {autoReconnect: true}, function (err, connection) {
-            var db = connection.db(dbName);
-            db.collection('user').drop();
-            db.collection('trip').drop();
-            db.collection('place').drop();
-            connection.close();
-            console.log('Deleted DB data');
-        });
-    },
-
+    
     //creates Test data in DB
     createDBData() {
         MongoClient.connect(connectionString, {autoReconnect: true}, function (err, connection) {
@@ -59,6 +48,24 @@ var database = {
                 });
         });
     },
+
+    //drops all DB collections
+    deleteDBData() {
+        MongoClient.connect(connectionString, {autoReconnect: true}, function (err, connection) {
+            var db = connection.db(dbName);
+            db.dropDatabase();
+            /*
+            var db = connection.db(dbName);
+            db.collection('user').drop();
+            db.collection('trip').drop();
+            db.collection('place').drop();
+            */
+            connection.close();
+            console.log('Deleted DB data');
+        });
+    },
+
+    
 
     //inserts a given dataset in the given DB collection
     //param collectionName: name of collection
@@ -165,7 +172,11 @@ var database = {
     },
 };
 
-
+/*
+database.connect(connectionString, function() {
+    
+});
+*/
 
 //------------------------------------------------------
 //Test data insert functions:
