@@ -1,14 +1,14 @@
 var express = require('express');
 var router = express.Router();
-const User = require('../models/user');
+const User = require('../models/trip');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  user.find().sort('userid').exec(function(err, users) {
+  trip.find().sort('tripid').exec(function(err, trips) {
     if (err) {
       return next(err);
     }
-    res.send(users);
+    res.send(trips);
   });
 });
 

@@ -1,14 +1,14 @@
 var express = require('express');
 var router = express.Router();
-const User = require('../models/user');
+const User = require('../models/place');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  user.find().sort('userid').exec(function(err, users) {
+  place.find().sort('placeid').exec(function(err, places) {
     if (err) {
       return next(err);
     }
-    res.send(users);
+    res.send(places);
   });
 });
 
