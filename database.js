@@ -15,7 +15,7 @@ var MongoClient = mongodb.MongoClient;
 var dbName = 'TravelLog';
 
 // Connection URL
-var connectionString = 'mongodb://localhost:3000/' + dbName;
+var connectionString = 'mongodb://localhost:27017/' + dbName;
 
 //connect database to server
 var database = {
@@ -679,9 +679,10 @@ var database = {
             });
         })
     }
+    */
 };
 
-*/
+
 
 //------------------------------------------------------
 //Test data insert functions:
