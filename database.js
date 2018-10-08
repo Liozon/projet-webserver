@@ -1,4 +1,4 @@
-// Database: TravelLog
+// Database: travelLog
 // Collections: user, trip, place
 
 
@@ -12,7 +12,7 @@ var mongodb = require('mongodb');
 var MongoClient = mongodb.MongoClient;
 
 // Database name
-var dbName = 'TravelLog';
+var dbName = 'travelLog';
 
 // Connection URL
 var connectionString = 'mongodb://localhost:27017/' + dbName;
