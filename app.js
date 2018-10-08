@@ -10,7 +10,7 @@ var usersRouter = require('./routes/users');
 var app = express();
 const mongoose = require('mongoose');
 mongoose.Promise = Promise;
-mongoose.connect('mongodb://localhost/travelLog');
+mongoose.connect(process.env.MONGODB_URI ||'mongodb://localhost/travelLog');
 
 
 // view engine setup
