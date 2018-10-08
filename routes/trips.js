@@ -1,31 +1,29 @@
 var express = require('express');
 var router = express.Router();
-const User = require('../models/user');
+const Trip = require('../models/trip');
 
-
-/* POST new user */
+/* POST new trip */
 router.post('/', function(req, res, next) {
   // Create a new document from the JSON in the request body
-  const newUser = new user(req.body);
+  const newTrip = new trip(req.body);
   // Save that document
-  newUser.save(function(err, savedUser) {
+  newTrip.save(function(err, savedTrip) {
     if (err) {
       return next(err);
     }
     // Send the saved document in the response
-    res.send(savedUser);
+    res.send(savedTrip);
   });
 });
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  User.find().sort('userid').exec(function(err, users) {
+  Trip.find().sort('tripid').exec(function(err, trips) {
     if (err) {
       return next(err);
     }
-    res.send(users);
+    res.send(trips);
   });
 });
-
 
 module.exports = router;
