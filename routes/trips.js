@@ -1,11 +1,19 @@
+// TODO: DELETE, PATCH
+
+const debug = require('debug');
 var express = require('express');
-var router = express.Router();
+const mongoose = require('mongoose');
 const Trip = require('../models/trip');
 
-/* POST new trip */
+var router = express.Router();
+
+
+/* 
+ * POST: create a new trip 
+ */
 router.post('/', function(req, res, next) {
   // Create a new document from the JSON in the request body
-  const newTrip = new trip(req.body);
+  const newTrip = new Trip(req.body);
   // Save that document
   newTrip.save(function(err, savedTrip) {
     if (err) {
@@ -16,7 +24,9 @@ router.post('/', function(req, res, next) {
   });
 });
 
-/* GET users listing. */
+/* 
+ * GET: list all trips
+ */
 router.get('/', function(req, res, next) {
   Trip.find().sort('tripid').exec(function(err, trips) {
     if (err) {
@@ -25,5 +35,26 @@ router.get('/', function(req, res, next) {
     res.send(trips);
   });
 });
+
+/* 
+ * PATCH: Modify an existing trip 
+ */
+
+/* 
+ * DELETE: Delete an existing trip 
+ */
+router.delete('/', function(req, res, next) {
+    
+    // remove the trip
+    req.trip.remove(function(err) {
+        if (err) {
+            return next(err);
+        }
+        
+        debug('Deleted trip "${req.trip.tripName}"');
+        res.sendStatus(204);
+    });
+});
+
 
 module.exports = router;
