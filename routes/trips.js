@@ -1,11 +1,12 @@
 // TODO: DELETE, PATCH
 
 const debug = require('debug');
-var express = require('express');
+const express = require('express');
 const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 const Trip = require('../models/trip');
 
-var router = express.Router();
+const router = express.Router();
 
 
 /* 
@@ -43,7 +44,7 @@ router.get('/', function(req, res, next) {
 /* 
  * DELETE: Delete an existing trip 
  */
-router.delete('/', function(req, res, next) {
+router.delete('/:tripid', loadTripFromParamsMiddleware, function(req, res, next) {
     
     // remove the trip
     req.trip.remove(function(err) {
@@ -51,10 +52,40 @@ router.delete('/', function(req, res, next) {
             return next(err);
         }
         
-        debug('Deleted trip "${req.trip.tripName}"');
+        debug(`Deleted trip "${req.trip.tripName}"`);
         res.sendStatus(204);
     });
 });
+
+/**
+ * Middleware that loads the trip corresponding to the ID in the URL path.
+ * Responds with 404 Not Found if the ID is not valid or the trip doesn't exist.
+ */
+function loadTripFromParamsMiddleware(req, res, next) {
+
+  const tripid = req.params.tripid;
+
+  let query = Trip.findOne({ tripid: tripid });
+
+  query.exec(function(err, trip) {
+    if (err) {
+      return next(err);
+    } else if (!trip) {
+      return tripNotFound(res, tripid);
+    }
+
+    req.trip = trip;
+    next();
+  });
+}
+
+/**
+ * Responds with 404 Not Found and a message indicating that the trip with the specified ID was not found.
+ */
+function tripNotFound(res, tripid) {
+  return res.status(404).type('text').send(`No trip found with ID ${tripid}`);
+}
+
 
 
 module.exports = router;

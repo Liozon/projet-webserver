@@ -1,11 +1,12 @@
 // TODO: DELETE, PATCH
 
 const debug = require('debug');
-var express = require('express');
+const express = require('express');
 const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 const Place = require('../models/place');
 
-var router = express.Router();
+const router = express.Router();
 
 
 /* 
@@ -43,7 +44,7 @@ router.get('/', function(req, res, next) {
 /* 
  * DELETE: Delete an existing place 
  */
-router.delete('/', function(req, res, next) {
+router.delete('/:placeid', loadPlaceFromParamsMiddleware, function(req, res, next) {
     
     // remove the place
     req.place.remove(function(err) {
@@ -51,10 +52,40 @@ router.delete('/', function(req, res, next) {
             return next(err);
         }
         
-        debug('Deleted place "${req.place.placeName}"');
+        debug(`Deleted place "${req.place.placeName}"`);
         res.sendStatus(204);
     });
 });
+
+/**
+ * Middleware that loads the place corresponding to the ID in the URL path.
+ * Responds with 404 Not Found if the ID is not valid or the place doesn't exist.
+ */
+function loadPlaceFromParamsMiddleware(req, res, next) {
+
+  const placeid = req.params.placeid;
+
+  let query = Place.findOne({ placeid: placeid });
+
+  query.exec(function(err, place) {
+    if (err) {
+      return next(err);
+    } else if (!place) {
+      return placeNotFound(res, placeid);
+    }
+
+    req.place = place;
+    next();
+  });
+}
+
+/**
+ * Responds with 404 Not Found and a message indicating that the place with the specified ID was not found.
+ */
+function placeNotFound(res, placeid) {
+  return res.status(404).type('text').send(`No place found with ID ${placeid}`);
+}
+
 
 
 module.exports = router;

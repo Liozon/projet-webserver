@@ -1,11 +1,12 @@
 // TODO: DELETE, PATCH
 
 const debug = require('debug');
-var express = require('express');
+const express = require('express');
 const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 const User = require('../models/user');
 
-var router = express.Router();
+const router = express.Router();
 
 
 /* 
@@ -44,7 +45,7 @@ router.get('/', function(req, res, next) {
 /* 
  * DELETE: Delete an existing user 
  */
-router.delete('/', function(req, res, next) {
+router.delete('/:userid', loadUserFromParamsMiddleware, function(req, res, next) {
     
     // remove the user
     req.user.remove(function(err) {
@@ -52,10 +53,39 @@ router.delete('/', function(req, res, next) {
             return next(err);
         }
         
-        debug('Deleted person "${req.user.userName}"');
+        debug(`Deleted person "${req.user.userName}"`);
         res.sendStatus(204);
     });
 });
+
+/**
+ * Middleware that loads the user corresponding to the ID in the URL path.
+ * Responds with 404 Not Found if the ID is not valid or the user doesn't exist.
+ */
+function loadUserFromParamsMiddleware(req, res, next) {
+
+  const userid = req.params.userid;
+
+  let query = User.findOne({ userid: userid });
+
+  query.exec(function(err, user) {
+    if (err) {
+      return next(err);
+    } else if (!user) {
+      return userNotFound(res, userid);
+    }
+
+    req.user = user;
+    next();
+  });
+}
+
+/**
+ * Responds with 404 Not Found and a message indicating that the user with the specified ID was not found.
+ */
+function userNotFound(res, userid) {
+  return res.status(404).type('text').send(`No user found with ID ${userid}`);
+}
 
 
 module.exports = router;

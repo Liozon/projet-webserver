@@ -12,6 +12,7 @@ const placeSchema = new Schema({
         required: true,
         unique: true,
         validate: {
+            isAsync: true,
             // Manually validate uniqueness to send a "pretty" validation error
             validator: validatePlaceidUniqueness,
             message: 'Place {VALUE} already exists'
@@ -23,6 +24,13 @@ const placeSchema = new Schema({
     },
     placeDescription: {
         type: String
+    },
+    placeGeolocalisation: {
+        
+    },
+    placePicture: {
+        data: Buffer, 
+        contentType: String
     },
     placeCreationDate: {
         type: Date,
@@ -41,7 +49,7 @@ const placeSchema = new Schema({
 function validatePlaceidUniqueness(value, callback) {
   const place = this;
   this.constructor.findOne().where('placeid').equals(value).exec(function(err, existingPlace) {
-    callback(!err && (!existingPlace || existingPlace._id.equals(place._id)));
+    callback(!err && !existingPlace);
   });
 }
 

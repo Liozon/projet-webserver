@@ -10,6 +10,7 @@ const tripSchema = new Schema({
         required: true,
         unique: true,
         validate: {
+            isAsync: true,
             // Manually validate uniqueness to send a "pretty" validation error
             validator: validateTripidUniqueness,
             message: 'Trip {VALUE} already exists'
@@ -39,7 +40,7 @@ const tripSchema = new Schema({
 function validateTripidUniqueness(value, callback) {
   const trip = this;
   this.constructor.findOne().where('tripid').equals(value).exec(function(err, existingTrip) {
-    callback(!err && (!existingTrip || existingTrip._id.equals(trip._id)));
+    callback(!err && !existingTrip );
   });
 }
 
