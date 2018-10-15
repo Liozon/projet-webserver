@@ -1,6 +1,6 @@
 // TODO: DELETE, PATCH
 
-const debug = require('debug');
+const debug = require('debug')('travelLog');
 const express = require('express');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
@@ -20,8 +20,13 @@ router.post('/', utils.requireJson, function(req, res, next) {
     if (err) {
       return next(err);
     }
+      debug(`Created user "${savedUser.userName}"`);
     // Send the saved document in the response
-    res.send(savedUser);
+      
+    res
+        .status(201)
+        //.set('Location',`${config.baseUrl}/api/people/${savedPerson._id}`)
+        .send(savedUser);
   });
 });
 

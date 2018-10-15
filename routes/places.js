@@ -1,6 +1,6 @@
 // TODO: DELETE, PATCH
 
-const debug = require('debug');
+const debug = require('debug')('travelLog');
 const express = require('express');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
