@@ -48,6 +48,9 @@ const placeSchema = new Schema({
  */
 function validatePlaceidUniqueness(value, callback) {
   const place = this;
+    if (!place.isNew){
+        return callback(true)
+    }
   this.constructor.findOne().where('placeid').equals(value).exec(function(err, existingPlace) {
     callback(!err && !existingPlace);
   });

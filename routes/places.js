@@ -5,14 +5,14 @@ const express = require('express');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const Place = require('../models/place');
-
+const utils = require('./utils');
 const router = express.Router();
 
 
 /* 
  * POST: create a new place 
  */
-router.post('/', function(req, res, next) {
+router.post('/', utils.requireJson, function(req, res, next) {
   // Create a new document from the JSON in the request body
   const newPlace = new Place(req.body);
   // Save that document
@@ -38,8 +38,30 @@ router.get('/', function(req, res, next) {
 });
 
 /* 
- * PATCH: Modify an existing place 
+ * PATCH: Modify an existing trip 
  */
+router.patch('/:placeid', utils.requireJson, loadPlaceFromParamsMiddleware, function(req, res, next) {
+
+  // Update properties present in the request body
+  if (req.body.placeName !== undefined) {
+    req.place.placeName = req.body.placeName;
+  }
+  if (req.body.placeDescription !== undefined) {
+    req.place.placeDescription = req.body.placeDescription;
+  }
+
+    req.place.set("placeLastModDate", Date.now());
+    
+  req.place.save(function(err, savedPlace) {
+    if (err) {
+      return next(err);
+    }
+
+
+    debug(`Updated Place "${savedPlace.placeName}"`);
+    res.send(savedPlace);
+  });
+});
 
 /* 
  * DELETE: Delete an existing place 

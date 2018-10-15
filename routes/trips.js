@@ -5,14 +5,14 @@ const express = require('express');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const Trip = require('../models/trip');
-
+const utils = require('./utils');
 const router = express.Router();
 
 
 /* 
  * POST: create a new trip 
  */
-router.post('/', function(req, res, next) {
+router.post('/', utils.requireJson, function(req, res, next) {
   // Create a new document from the JSON in the request body
   const newTrip = new Trip(req.body);
   // Save that document
@@ -40,6 +40,29 @@ router.get('/', function(req, res, next) {
 /* 
  * PATCH: Modify an existing trip 
  */
+router.patch('/:tripid', utils.requireJson, loadTripFromParamsMiddleware, function(req, res, next) {
+
+  // Update properties present in the request body
+  if (req.body.tripName !== undefined) {
+    req.trip.tripName = req.body.tripName;
+  }
+  if (req.body.tripDescription !== undefined) {
+    req.trip.tripDescription = req.body.tripDescription;
+  }
+
+    req.trip.set("tripLastModDate",Date.now());
+    
+  req.trip.save(function(err, savedTrip) {
+    if (err) {
+      return next(err);
+    }
+
+
+    debug(`Updated Trip "${savedTrip.tripName}"`);
+    res.send(savedTrip);
+  });
+});
+
 
 /* 
  * DELETE: Delete an existing trip 

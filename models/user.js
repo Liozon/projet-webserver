@@ -58,6 +58,9 @@ function validateEmail(email) {
  */
 function validateUseridUniqueness(value, callback) {
   const user = this;
+    if (!user.isNew){
+        return callback(true)
+    }
   this.constructor.findOne().where('userid').equals(value).exec(function(err, existingUser) {
     callback(!err && !existingUser);
   });

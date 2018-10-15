@@ -5,14 +5,14 @@ const express = require('express');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const User = require('../models/user');
-
+const utils = require('./utils');
 const router = express.Router();
 
 
 /* 
  * POST: create a new user 
  */
-router.post('/', function(req, res, next) {
+router.post('/', utils.requireJson, function(req, res, next) {
   // Create a new document from the JSON in the request body
   const newUser = new User(req.body);
   // Save that document
@@ -40,7 +40,28 @@ router.get('/', function(req, res, next) {
 /* 
  * PATCH: Modify an existing user 
  */
-//router.patch('/', function(req, res, next) { });
+router.patch('/:userid', utils.requireJson, loadUserFromParamsMiddleware, function(req, res, next) {
+
+  // Update properties present in the request body
+  if (req.body.userName !== undefined) {
+    req.user.userName = req.body.userName;
+  }
+  if (req.body.email !== undefined) {
+    req.user.email = req.body.email;
+  }
+  if (req.body.password !== undefined) {
+    req.user.password = req.body.password;
+  }
+
+  req.user.save(function(err, savedUser) {
+    if (err) {
+      return next(err);
+    }
+
+    debug(`Updated User "${savedUser.userName}"`);
+    res.send(savedUser);
+  });
+});
 
 /* 
  * DELETE: Delete an existing user 
