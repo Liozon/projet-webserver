@@ -1,6 +1,6 @@
 // TODO: DELETE, PATCH
 
-const debug = require('debug');
+const debug = require('debug')('travelLog');
 const express = require('express');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
@@ -20,8 +20,12 @@ router.post('/', utils.requireJson, function(req, res, next) {
     if (err) {
       return next(err);
     }
+      
+      debug(`Created place "${savedPlace.placeName}"`);
     // Send the saved document in the response
-    res.send(savedPlace);
+    res
+        .status(201)
+        .send(savedPlace);
   });
 });
 
@@ -34,6 +38,19 @@ router.get('/', function(req, res, next) {
       return next(err);
     }
     res.send(places);
+  });
+});
+
+/* 
+ * GET: list one place
+ */
+router.get('/:placeid', function(req, res, next) {
+const placeid = req.params.placeid; 
+  Place.findOne({ placeid : placeid }).exec(function(err, place) {
+    if (err) {
+      return next(err);
+    }
+    res.send(place);
   });
 });
 

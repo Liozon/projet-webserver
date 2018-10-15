@@ -1,6 +1,4 @@
-// TODO: DELETE, PATCH
-
-const debug = require('debug');
+const debug = require('debug')('travelLog');
 const express = require('express');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
@@ -20,8 +18,12 @@ router.post('/', utils.requireJson, function(req, res, next) {
     if (err) {
       return next(err);
     }
+      
+     debug(`Created trip "${savedTrip.tripName}"`); 
     // Send the saved document in the response
-    res.send(savedTrip);
+    res
+        .status(201)
+        .send(savedTrip);
   });
 });
 
@@ -34,6 +36,19 @@ router.get('/', function(req, res, next) {
       return next(err);
     }
     res.send(trips);
+  });
+});
+
+/* 
+ * GET: list one trip
+ */
+router.get('/:tripid', function(req, res, next) {
+    const tripid = req.params.tripid; 
+  Trip.findOne({ tripid : tripid }).exec(function(err, trip) {
+    if (err) {
+      return next(err);
+    }
+    res.send(trip);
   });
 });
 
