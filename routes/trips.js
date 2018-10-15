@@ -1,18 +1,16 @@
-// TODO: DELETE, PATCH
-
-const debug = require('debug');
+const debug = require('debug')('travelLog');
 const express = require('express');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const Trip = require('../models/trip');
-
+const utils = require('./utils');
 const router = express.Router();
 
 
 /* 
  * POST: create a new trip 
  */
-router.post('/', function(req, res, next) {
+router.post('/', utils.requireJson, function(req, res, next) {
   // Create a new document from the JSON in the request body
   const newTrip = new Trip(req.body);
   // Save that document
@@ -20,8 +18,12 @@ router.post('/', function(req, res, next) {
     if (err) {
       return next(err);
     }
+      
+     debug(`Created trip "${savedTrip.tripName}"`); 
     // Send the saved document in the response
-    res.send(savedTrip);
+    res
+        .status(201)
+        .send(savedTrip);
   });
 });
 
@@ -38,8 +40,44 @@ router.get('/', function(req, res, next) {
 });
 
 /* 
+ * GET: list one trip
+ */
+router.get('/:tripid', function(req, res, next) {
+    const tripid = req.params.tripid; 
+  Trip.findOne({ tripid : tripid }).exec(function(err, trip) {
+    if (err) {
+      return next(err);
+    }
+    res.send(trip);
+  });
+});
+
+/* 
  * PATCH: Modify an existing trip 
  */
+router.patch('/:tripid', utils.requireJson, loadTripFromParamsMiddleware, function(req, res, next) {
+
+  // Update properties present in the request body
+  if (req.body.tripName !== undefined) {
+    req.trip.tripName = req.body.tripName;
+  }
+  if (req.body.tripDescription !== undefined) {
+    req.trip.tripDescription = req.body.tripDescription;
+  }
+
+    req.trip.set("tripLastModDate",Date.now());
+    
+  req.trip.save(function(err, savedTrip) {
+    if (err) {
+      return next(err);
+    }
+
+
+    debug(`Updated Trip "${savedTrip.tripName}"`);
+    res.send(savedTrip);
+  });
+});
+
 
 /* 
  * DELETE: Delete an existing trip 

@@ -1,18 +1,18 @@
 // TODO: DELETE, PATCH
 
-const debug = require('debug');
+const debug = require('debug')('travelLog');
 const express = require('express');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const User = require('../models/user');
-
+const utils = require('./utils');
 const router = express.Router();
 
 
 /* 
  * POST: create a new user 
  */
-router.post('/', function(req, res, next) {
+router.post('/', utils.requireJson, function(req, res, next) {
   // Create a new document from the JSON in the request body
   const newUser = new User(req.body);
   // Save that document
@@ -20,8 +20,13 @@ router.post('/', function(req, res, next) {
     if (err) {
       return next(err);
     }
+      debug(`Created user "${savedUser.userName}"`);
     // Send the saved document in the response
-    res.send(savedUser);
+      
+    res
+        .status(201)
+ //.set('Location',`${config.baseUrl}/api/people/${savedPerson._id}`)
+        .send(savedUser);
   });
 });
 
@@ -38,9 +43,74 @@ router.get('/', function(req, res, next) {
 });
 
 /* 
+ * GET: list one user
+ */
+router.get('/:userid', function(req, res, next) {
+const userid = req.params.userid; 
+  User.findOne({ userid : userid }).exec(function(err, user) {
+    if (err) {
+      return next(err);
+    }
+    res.send(user);
+  });
+});
+
+
+/* 
+ * GET: list all trips of one user
+ */
+function countTripsFromUser(user, callback) {
+
+  // Do not perform the aggregation query if there are no user to retrieve trips for
+  if (user.length <= 0) {
+    return callback(undefined, []);
+  }
+
+  // Aggregate trips count by user (i.e. user ID)
+  Trip.aggregate([
+    {
+      $match: { // Select only trips directed by the user we are interested in
+        creator: {
+          $in: user.map(user => user.userid)
+        }
+      }
+    },
+    {
+      $group: { // Count trips by creator
+        _id: '$creator',
+        tripsCount: {
+          $sum: 1
+        }
+      }
+    }
+  ], callback);
+}
+
+/* 
  * PATCH: Modify an existing user 
  */
-//router.patch('/', function(req, res, next) { });
+router.patch('/:userid', utils.requireJson, loadUserFromParamsMiddleware, function(req, res, next) {
+
+  // Update properties present in the request body
+  if (req.body.userName !== undefined) {
+    req.user.userName = req.body.userName;
+  }
+  if (req.body.email !== undefined) {
+    req.user.email = req.body.email;
+  }
+  if (req.body.password !== undefined) {
+    req.user.password = req.body.password;
+  }
+
+  req.user.save(function(err, savedUser) {
+    if (err) {
+      return next(err);
+    }
+
+    debug(`Updated User "${savedUser.userName}"`);
+    res.send(savedUser);
+  });
+});
 
 /* 
  * DELETE: Delete an existing user 
