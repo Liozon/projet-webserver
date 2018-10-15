@@ -39,6 +39,9 @@ const tripSchema = new Schema({
  */
 function validateTripidUniqueness(value, callback) {
   const trip = this;
+    if (!trip.isNew){
+        return callback(true)
+    }
   this.constructor.findOne().where('tripid').equals(value).exec(function(err, existingTrip) {
     callback(!err && !existingTrip );
   });

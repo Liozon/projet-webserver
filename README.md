@@ -39,6 +39,10 @@ Routes :
 
     - /user/trips ((get all trips of a user))
     - /trip/places ((get all places of a trip))
+    
+    - /user/userid
+    - /trip/tripid
+    - /place/placeid
 
 - POST (Create a new resource)
     - /user
