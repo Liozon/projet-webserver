@@ -1,11 +1,19 @@
+// TODO: DELETE, PATCH
+
+const debug = require('debug');
 var express = require('express');
-var router = express.Router();
+const mongoose = require('mongoose');
 const Place = require('../models/place');
 
-/* POST new place */
+var router = express.Router();
+
+
+/* 
+ * POST: create a new place 
+ */
 router.post('/', function(req, res, next) {
   // Create a new document from the JSON in the request body
-  const newPlace = new place(req.body);
+  const newPlace = new Place(req.body);
   // Save that document
   newPlace.save(function(err, savedPlace) {
     if (err) {
@@ -16,7 +24,9 @@ router.post('/', function(req, res, next) {
   });
 });
 
-/* GET users listing. */
+/* 
+ * GET: list all places
+ */
 router.get('/', function(req, res, next) {
   Place.find().sort('placeid').exec(function(err, places) {
     if (err) {
@@ -25,5 +35,26 @@ router.get('/', function(req, res, next) {
     res.send(places);
   });
 });
+
+/* 
+ * PATCH: Modify an existing place 
+ */
+
+/* 
+ * DELETE: Delete an existing place 
+ */
+router.delete('/', function(req, res, next) {
+    
+    // remove the place
+    req.place.remove(function(err) {
+        if (err) {
+            return next(err);
+        }
+        
+        debug('Deleted place "${req.place.placeName}"');
+        res.sendStatus(204);
+    });
+});
+
 
 module.exports = router;
