@@ -1,3 +1,5 @@
+// TODO: id automatic creation
+
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
@@ -10,6 +12,7 @@ const userSchema = new Schema({
         required: true,
         unique: true,
         validate: {
+            isAsync: true,
             // Manually validate uniqueness to send a "pretty" validation error
             validator: validateUseridUniqueness,
             message: 'User {VALUE} already exists'
@@ -38,12 +41,14 @@ const userSchema = new Schema({
     }
 });
 
+
+
 /**
  * Verify if email is valid using regular expression
  * Source: https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
  */
 function validateEmail(email) {
-    var emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return emailRegex.test(String(email).toLowerCase());
 }
 
@@ -54,7 +59,7 @@ function validateEmail(email) {
 function validateUseridUniqueness(value, callback) {
   const user = this;
   this.constructor.findOne().where('userid').equals(value).exec(function(err, existingUser) {
-    callback(!err && (!existingUser || existingUser._id.equals(user._id)));
+    callback(!err && !existingUser);
   });
 }
 

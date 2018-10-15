@@ -70,6 +70,8 @@ QUESTIONS :
       => var uniqueValidator = require('mongoose-unique-validator');
          userSchema.plugin(uniqueValidator);
 
+- Comment on intègre photo et geolocalisation dans le schema?
+
 - Où est-ce qu'on peut tester les conditions définies ?
 
 - Comment on écrit DELETE et PATCH? 
