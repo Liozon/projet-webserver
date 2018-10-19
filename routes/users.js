@@ -1,5 +1,3 @@
-// TODO: DELETE, PATCH
-
 const debug = require('debug')('travelLog');
 const express = require('express');
 const mongoose = require('mongoose');
@@ -7,124 +5,112 @@ const ObjectId = mongoose.Types.ObjectId;
 const User = require('../models/user');
 const utils = require('./utils');
 const router = express.Router();
+const config = require('../config');
 
 
 /* 
  * POST: create a new user 
  */
-router.post('/', utils.requireJson, function(req, res, next) {
-  // Create a new document from the JSON in the request body
-  const newUser = new User(req.body);
-  // Save that document
-  newUser.save(function(err, savedUser) {
-    if (err) {
-      return next(err);
+router.post('/', utils.requireJson, function (req, res, next) {
+
+    //Validate request
+    if (!req.body.content) {
+        res.status(404);
     }
-      debug(`Created user "${savedUser.userName}"`);
-    // Send the saved document in the response
-      
-    res
-        .status(201)
- //.set('Location',`${config.baseUrl}/api/people/${savedPerson._id}`)
-        .send(savedUser);
-  });
+
+    // Create a new document from the JSON in the request body
+    const newUser = new User(req.body);
+    // Save that document
+    newUser.save(function (err, savedUser) {
+        if (err) {
+            res.status(500);
+            return next(err);
+        }
+        debug(`Created user "${savedUser.userName}"`);
+        // Send the saved document in the response
+        res
+            .status(201)
+            .set('Location',`${config.baseUrl}/users/${savedUser.userid}`)
+            .send(savedUser);
+    });
 });
 
 /* 
  * GET: list all users
  */
-router.get('/', function(req, res, next) {
-  User.find().sort('userid').exec(function(err, users) {
-    if (err) {
-      return next(err);
-    }
-    res.send(users);
-  });
+router.get('/', function (req, res, next) {
+    
+    User.find().sort('userid').exec(function (err, users) {
+        if (err) {
+            res.status(404);
+            return next(err);
+        }
+        res
+            .status(200)
+            .send(users);
+    });
 });
 
 /* 
  * GET: list one user
  */
-router.get('/:userid', function(req, res, next) {
-const userid = req.params.userid; 
-  User.findOne({ userid : userid }).exec(function(err, user) {
-    if (err) {
-      return next(err);
-    }
-    res.send(user);
-  });
+router.get('/:userid', function (req, res, next) {
+    const userid = req.params.userid;
+    User.findOne({
+        userid: userid
+    }).exec(function (err, user) {
+        if (err) {
+            res.status(404);
+            return next(err);
+        }
+        res
+            .status(200)
+            .send(user);
+    });
 });
 
 
 /* 
- * GET: list all trips of one user
- */
-function countTripsFromUser(user, callback) {
-
-  // Do not perform the aggregation query if there are no user to retrieve trips for
-  if (user.length <= 0) {
-    return callback(undefined, []);
-  }
-
-  // Aggregate trips count by user (i.e. user ID)
-  Trip.aggregate([
-    {
-      $match: { // Select only trips directed by the user we are interested in
-        creator: {
-          $in: user.map(user => user.userid)
-        }
-      }
-    },
-    {
-      $group: { // Count trips by creator
-        _id: '$creator',
-        tripsCount: {
-          $sum: 1
-        }
-      }
-    }
-  ], callback);
-}
-
-/* 
  * PATCH: Modify an existing user 
  */
-router.patch('/:userid', utils.requireJson, loadUserFromParamsMiddleware, function(req, res, next) {
+router.patch('/:userid', utils.requireJson, loadUserFromParamsMiddleware, function (req, res, next) {
 
-  // Update properties present in the request body
-  if (req.body.userName !== undefined) {
-    req.user.userName = req.body.userName;
-  }
-  if (req.body.email !== undefined) {
-    req.user.email = req.body.email;
-  }
-  if (req.body.password !== undefined) {
-    req.user.password = req.body.password;
-  }
-
-  req.user.save(function(err, savedUser) {
-    if (err) {
-      return next(err);
+    // Update properties present in the request body
+    if (req.body.userName !== undefined) {
+        req.user.userName = req.body.userName;
+    }
+    if (req.body.email !== undefined) {
+        req.user.email = req.body.email;
+    }
+    if (req.body.password !== undefined) {
+        req.user.password = req.body.password;
     }
 
-    debug(`Updated User "${savedUser.userName}"`);
-    res.send(savedUser);
-  });
+    req.user.save(function (err, savedUser) {
+        if (err) {
+            return next(err);
+        }
+
+        debug(`Updated User "${savedUser.userName}"`);
+        res
+            .status(200)
+            .send(savedUser);
+    });
 });
 
 /* 
  * DELETE: Delete an existing user 
  */
-router.delete('/:userid', loadUserFromParamsMiddleware, function(req, res, next) {
-    
+router.delete('/:_id', loadUserFromParamsMiddleware, function (req, res, next) {
+
     // remove the user
-    req.user.remove(function(err) {
+    req.user.remove(function (err) {
         if (err) {
             return next(err);
         }
-        
+
         debug(`Deleted person "${req.user.userName}"`);
-        res.sendStatus(204);
+        res.sendStatus(200);
     });
 });
 
@@ -134,28 +120,60 @@ router.delete('/:userid', loadUserFromParamsMiddleware, function(req, res, next)
  */
 function loadUserFromParamsMiddleware(req, res, next) {
 
-  const userid = req.params.userid;
+    const userid = req.params.userid;
 
-  let query = User.findOne({ userid: userid });
+    let query = User.findOne({
+        userid: userid
+    });
 
-  query.exec(function(err, user) {
-    if (err) {
-      return next(err);
-    } else if (!user) {
-      return userNotFound(res, userid);
-    }
+    query.exec(function (err, user) {
+        if (err) {
+            return next(err);
+        } else if (!user) {
+            return userNotFound(res, userid);
+        }
 
-    req.user = user;
-    next();
-  });
+        req.user = user;
+        next();
+    });
 }
 
 /**
  * Responds with 404 Not Found and a message indicating that the user with the specified ID was not found.
  */
 function userNotFound(res, userid) {
-  return res.status(404).type('text').send(`No user found with ID ${userid}`);
+    return res.status(404).type('text').send(`No user found with ID ${userid}`);
 }
 
+
+/* 
+ * GET: list all trips of one user
+ */
+/*function countTripsFromUser(user, callback) {
+
+    // Do not perform the aggregation query if there are no user to retrieve trips for
+    if (user.length <= 0) {
+        return callback(undefined, []);
+    }
+
+    // Aggregate trips count by user (i.e. user ID)
+    Trip.aggregate([
+        {
+            $match: { // Select only trips directed by the user we are interested in
+                creator: {
+                    $in: user.map(user => user.userid)
+                }
+            }
+    },
+        {
+            $group: { // Count trips by creator
+                _id: '$creator',
+                tripsCount: {
+                    $sum: 1
+                }
+            }
+    }
+  ], callback);
+}*/
 
 module.exports = router;
