@@ -1,15 +1,13 @@
-// TODO: id automatic creation
-
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 /**
- * Define the schema for users(ID, username, email, password, registration Date)
+ * Define the schema for users
  */
 const userSchema = new Schema({
     userid: {
         type: Number,
-        required: true,
+        //required: true,
         unique: true,
         validate: {
             isAsync: true,
@@ -41,6 +39,23 @@ const userSchema = new Schema({
     }
 });
 
+
+// Define a pre-save method for userSchema: Creation of automatic userid
+userSchema.pre('save', function(next) {
+    
+    if (this.userid === null) {
+        
+        userSchema.find().sort('userid').limit(1).exec(function (err, userid) {
+        if (err) {
+            this.userid = 1;
+        }
+        this.userid = userid + 1;
+        });
+
+    }
+     
+    next();
+}); 
 
 
 /**

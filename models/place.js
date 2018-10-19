@@ -1,10 +1,9 @@
-// TODO: placeGeolocalisation & placePicture in Schema
-
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const Trip = require("./trip");
 
 /**
- * Define the schema for places(ID, desciption, geolocalisation, picture, creation Date, last modification Date)
+ * Define the schema for places
  */
 const placeSchema = new Schema({
     placeid: {
@@ -26,7 +25,8 @@ const placeSchema = new Schema({
         type: String
     },
     placeGeolocalisation: {
-        
+        type: String,
+        coordinates: Number
     },
     placePicture: {
         data: Buffer, 
@@ -39,6 +39,15 @@ const placeSchema = new Schema({
     placeLastModDate: {
         type: Date,
         default: Date.now
+    },
+    placeCorrTrip:{
+        type: Number,
+        ref: 'Trip',
+        required: 'Correspondig trip is required',
+        validate: {
+            isAsync: true,
+            validator: validateTrip
+        }
     }
 });
 
@@ -55,6 +64,21 @@ function validatePlaceidUniqueness(value, callback) {
     callback(!err && !existingPlace);
   });
 }
+
+
+/**
+ * Connection with Trip
+ */
+function validateTrip(value, callback){
+  Trip.findOne({ 'tripid' : value }, function (err, placeCorrTrip){
+    if(placeCorrTrip){
+      callback(true);
+    } else {
+      callback(false);
+    }
+  });
+}
+
 
 // Create the model from the schema and export it
 module.exports = mongoose.model('Place', placeSchema);
