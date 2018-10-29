@@ -24,13 +24,13 @@ const placeSchema = new Schema({
     placeDescription: {
         type: String
     },
-    placeGeolocalisation: {
+    /* placeGeolocalisation: {
         type: String,
         coordinates: Number
-    },
+    }, */
     placePicture: {
-        data: Buffer, 
-        contentType: String
+        type: String,
+        default: "https://muggli.one/heig/webs/missing-img.png"
     },
     placeCreationDate: {
         type: Date,
@@ -39,6 +39,16 @@ const placeSchema = new Schema({
     placeLastModDate: {
         type: Date,
         default: Date.now
+    },
+    placeLatitude: {
+        type: Number,
+        default: 0.000000,
+        required: 'The latitude is required'
+    },
+    placeLongitude: {
+        type: Number,
+        default: 0.000000,
+        required: 'The longitude is required'
     },
     placeCorrTrip:{
         type: Number,

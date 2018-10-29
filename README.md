@@ -6,7 +6,6 @@ Cette API regroupe les tables suivantes :
 
 - user
     - userid
-    - userName 
     - email
     - password
     - registrationDate
