@@ -8,7 +8,7 @@ const Trip = require("./trip");
 const placeSchema = new Schema({
     placeid: {
         type: Number,
-        required: true,
+        //required: true,
         unique: true,
         validate: {
             isAsync: true,
@@ -49,6 +49,23 @@ const placeSchema = new Schema({
             validator: validateTrip
         }
     }
+});
+
+// Define a pre-save method for placeSchema: Creation of automatic placeid
+placeSchema.pre('save', function (next) {
+    this.constructor.find().sort('-placeid').limit(1).exec((err, placeList) => {
+        if (err) {
+            next(err);
+        } else {
+            if (placeList.length === 0) {
+                this.placeid = 1;
+                next();
+            } else {
+                this.placeid = placeList[0].placeid + 1;
+                next();
+            }
+        }
+    });
 });
 
 /**

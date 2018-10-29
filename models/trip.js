@@ -9,7 +9,7 @@ const User = require("./user");
 const tripSchema = new Schema({
     tripid: {
         type: Number,
-        required: true,
+        // required: true,
         unique: true,
         validate: {
             isAsync: true,
@@ -42,6 +42,23 @@ const tripSchema = new Schema({
             validator: validateCreator
         }
     },
+});
+
+// Define a pre-save method for tripSchema: Creation of automatic tripid
+tripSchema.pre('save', function (next) {
+    this.constructor.find().sort('-tripid').limit(1).exec((err, tripList) => {
+        if (err) {
+            next(err);
+        } else {
+            if (tripList.length === 0) {
+                this.tripid = 1;
+                next();
+            } else {
+                this.tripid = tripList[0].tripid + 1;
+                next();
+            }
+        }
+    });
 });
 
 
