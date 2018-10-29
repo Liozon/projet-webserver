@@ -42,8 +42,8 @@ Routes :
     - /trip/tripid ((get one trip))
     - /place/placeid ((get one place))
     
-=>  - /user/trips ((get all trips of a user))
-=>  - /trip/places ((get all places of a trip))
+    - /user/:userid/trips ((get all trips of a user))
+    - /trip/places ((get all places of a trip))
 
 
 - POST (Create a new resource)
@@ -68,17 +68,13 @@ Routes :
 
 ToDo:
 
-- last two GET routes
+- Aggregated data ((Julien))
 
-- Aggregated data
+- Documentation ((Steffi))
 
-- Sensitive data
+- REST: HTTP methods, headers and status codes, consistent URL hierarchy and/or naming structure ((Céline))
 
-- Documentation
-
-- REST: HTTP methods, headers and status codes, consistent URL hierarchy and/or naming structure
-
-- Reread Evaluation constraints
+- Reread Evaluation constraints ((Céline))
 
 
 -----------------------------------------------------------------
