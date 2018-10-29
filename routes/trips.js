@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const Trip = require('../models/trip');
+const Place = require('../models/place');
 const utils = require('./utils');
 const router = express.Router();
 
@@ -10,41 +11,71 @@ const router = express.Router();
 /* 
  * POST: create a new trip 
  */
-router.post('/', utils.requireJson, function(req, res, next) {
+router.post('/', utils.requireJson, function (req, res, next) {
   // Create a new document from the JSON in the request body
   const newTrip = new Trip(req.body);
   // Save that document
-  newTrip.save(function(err, savedTrip) {
+  newTrip.save(function (err, savedTrip) {
     if (err) {
       return next(err);
     }
-      
-     debug(`Created trip "${savedTrip.tripName}"`); 
+
+    debug(`Created trip "${savedTrip.tripName}"`);
     // Send the saved document in the response
     res
-        .status(201)
-        .send(savedTrip);
+      .status(201)
+      .send(savedTrip);
   });
 });
 
 /* 
  * GET: list all trips
  */
-router.get('/', function(req, res, next) {
-  Trip.find().sort('tripid').exec(function(err, trips) {
+router.get('/', function (req, res, next) {
+  Trip.find().sort('tripid').exec(function (err, trips) {
     if (err) {
       return next(err);
     }
-    res.send(trips);
+    const tripIds = trips.map(trip => trip.tripid);
+    Place.aggregate([
+      {
+        $match: { // Select movies directed by the people we are interested in
+          placeCorrTrip: { $in: tripIds }
+        }
+      },
+      {
+        $group: { // Group the documents by director ID
+          _id: '$placeCorrTrip',
+          placesCount: { // Count the number of movies for that ID
+            $sum: 1
+          }
+        }
+      }
+    ], function (err, results) {
+      if (err) {
+        return next(err);
+      }
+      const tripsJson = trips.map(trip => trip.toJSON());
+      results.forEach(function(result) {
+        // Get the director ID (that was used to $group)...
+        const resultId = result._id.toString();
+        // Find the corresponding person...
+        const correspondingTrip = tripsJson.find(trip => trip.tripid == resultId);
+        // And attach the new property
+        correspondingTrip.placesCount = result.placesCount;
+      });
+      // Send the enriched response
+      res.send(tripsJson);
+    });
   });
 });
 
 /* 
  * GET: list one trip
  */
-router.get('/:tripid', function(req, res, next) {
-    const tripid = req.params.tripid; 
-  Trip.findOne({ tripid : tripid }).exec(function(err, trip) {
+router.get('/:tripid', function (req, res, next) {
+  const tripid = req.params.tripid;
+  Trip.findOne({ tripid: tripid }).exec(function (err, trip) {
     if (err) {
       return next(err);
     }
@@ -52,10 +83,24 @@ router.get('/:tripid', function(req, res, next) {
   });
 });
 
+
+/* 
+ * GET: list one trip aggreggate
+ */
+router.get('/agg/:tripid', function (req, res, next) {
+
+  Place.find({ placeCorrTrip: req.params.tripid }).populate().exec(function (err, place) {
+    if (err) {
+      return next(err);
+    }
+    res.send(place);
+  })
+});
+
 /* 
  * PATCH: Modify an existing trip 
  */
-router.patch('/:tripid', utils.requireJson, loadTripFromParamsMiddleware, function(req, res, next) {
+router.patch('/:tripid', utils.requireJson, loadTripFromParamsMiddleware, function (req, res, next) {
 
   // Update properties present in the request body
   if (req.body.tripName !== undefined) {
@@ -65,9 +110,9 @@ router.patch('/:tripid', utils.requireJson, loadTripFromParamsMiddleware, functi
     req.trip.tripDescription = req.body.tripDescription;
   }
 
-  req.trip.set("tripLastModDate",Date.now());
-    
-  req.trip.save(function(err, savedTrip) {
+  req.trip.set("tripLastModDate", Date.now());
+
+  req.trip.save(function (err, savedTrip) {
     if (err) {
       return next(err);
     }
@@ -82,17 +127,17 @@ router.patch('/:tripid', utils.requireJson, loadTripFromParamsMiddleware, functi
 /* 
  * DELETE: Delete an existing trip 
  */
-router.delete('/:tripid', loadTripFromParamsMiddleware, function(req, res, next) {
-    
-    // remove the trip
-    req.trip.remove(function(err) {
-        if (err) {
-            return next(err);
-        }
-        
-        debug(`Deleted trip "${req.trip.tripName}"`);
-        res.sendStatus(204);
-    });
+router.delete('/:tripid', loadTripFromParamsMiddleware, function (req, res, next) {
+
+  // remove the trip
+  req.trip.remove(function (err) {
+    if (err) {
+      return next(err);
+    }
+
+    debug(`Deleted trip "${req.trip.tripName}"`);
+    res.sendStatus(204);
+  });
 });
 
 /**
@@ -105,7 +150,7 @@ function loadTripFromParamsMiddleware(req, res, next) {
 
   let query = Trip.findOne({ tripid: tripid });
 
-  query.exec(function(err, trip) {
+  query.exec(function (err, trip) {
     if (err) {
       return next(err);
     } else if (!trip) {
@@ -123,7 +168,5 @@ function loadTripFromParamsMiddleware(req, res, next) {
 function tripNotFound(res, tripid) {
   return res.status(404).type('text').send(`No trip found with ID ${tripid}`);
 }
-
-
 
 module.exports = router;
