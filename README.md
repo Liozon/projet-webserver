@@ -70,12 +70,6 @@ ToDo:
 
 - last two GET routes
 
-- User management: Registration & Authentication
-
-- Paginated list
-
-- List with optional filters
-
 - Aggregated data
 
 - Sensitive data
@@ -91,7 +85,7 @@ ToDo:
 
 QUESTIONS :
 
-- models/place.js: Geolocalisation & Picture in Schema correct?
+- models/place.js:geolocalisation automatique?
 
 - models/place.js: How to use correct timezone for date.now in the Schema?
 
