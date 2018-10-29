@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 /**
- * Define the schema for users
+ * Define the schema for users(ID, email, password, registration Date)
  */
 const userSchema = new Schema({
     userid: {
@@ -15,24 +15,17 @@ const userSchema = new Schema({
             validator: validateUseridUniqueness,
             message: 'User {VALUE} already exists'
         }
-    },
-    userName: {
-        type: String,
-        unique: true,
-        required: 'Username is required',
-        minlength: 3,
-        maxlength: 30,
-    },
+    }, 
     email: {
         type: String,
         required: 'Email adress is required',
+        unique: true,
         validate: [validateEmail, 'Please fill a valid email adress']
     },
     password: {
         type: String,
         required: true,
-        minlength: 8,
-        maxlength: 20,
+        minlength: 8
     },
     registrationDate: {
         type: Date,

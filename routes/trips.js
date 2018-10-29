@@ -10,7 +10,7 @@ const router = express.Router();
 /* 
  * POST: create a new trip 
  */
-router.post('/', utils.requireJson, function(req, res, next) {
+router.post('/', authenticate, utils.requireJson, function(req, res, next) {
   // Create a new document from the JSON in the request body
   const newTrip = new Trip(req.body);
   // Save that document
@@ -124,6 +124,30 @@ function tripNotFound(res, tripid) {
   return res.status(404).type('text').send(`No trip found with ID ${tripid}`);
 }
 
-
+/**
+ *  JWT authentication middleware
+ */
+function authenticate(req, res, next) {
+  // Ensure the header is present.
+  const authorization = req.get('Authorization');
+  if (!authorization) {
+    return res.status(401).send('Authorization header is missing');
+  }
+  // Check that the header has the correct format.
+  const match = authorization.match(/^Bearer (.+)$/);
+  if (!match) {
+    return res.status(401).send('Authorization header is not a bearer token');
+  }
+  // Extract and verify the JWT.
+  const token = match[1];
+  jwt.verify(token, secretKey, function(err, payload) {
+    if (err) {
+      return res.status(401).send('Your token is invalid or has expired');
+    } else {
+      req.currentUserid = payload.sub;
+      next(); // Pass the ID of the authenticated user to the next middleware.
+        }
+  })
+}
 
 module.exports = router;
