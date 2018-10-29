@@ -1,5 +1,3 @@
-// TODO: DELETE, PATCH
-
 const debug = require('debug')('travelLog');
 const express = require('express');
 const mongoose = require('mongoose');

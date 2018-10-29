@@ -16,6 +16,7 @@ Cette API regroupe les tables suivantes :
     - tripDescription
     - tripCreationDate
     - tripLastModDate
+    - tripCreator
     
 - place
     - placeid
@@ -25,6 +26,7 @@ Cette API regroupe les tables suivantes :
     - placePicture
     - placeCreationDate
     - placeLastModDate
+    - placeCorrTrip
     
     
 -----------------------------------------------------------------
@@ -32,26 +34,29 @@ Cette API regroupe les tables suivantes :
 Routes :
 
 - GET (Retrieve data)
-    - /users
-    - /trips
-    - /places
-
-    - /user/trips ((get all trips of a user))
-    - /trip/places ((get all places of a trip))
+    - /users ((get all users))
+    - /trips ((get all trips))
+    - /places ((get all places))
     
-    - /user/userid
-    - /trip/tripid
-    - /place/placeid
+    - /user/userid ((get one user))
+    - /trip/tripid ((get one trip))
+    - /place/placeid ((get one place))
+    
+=>  - /user/trips ((get all trips of a user))
+=>  - /trip/places ((get all places of a trip))
+
 
 - POST (Create a new resource)
     - /user
     - /trip
     - /place
 
+
 - DELETE (Delete a resource)
     - /user/userid
     - /trip/tripid
     - /place/placeid
+    
 
 - PATCH (Partially modify an existing resource)
     - /user/userid
@@ -61,23 +66,32 @@ Routes :
 
 -----------------------------------------------------------------
 
+ToDo:
+
+- last two GET routes
+
+- User management: Registration & Authentication
+
+- Paginated list
+
+- List with optional filters
+
+- Aggregated data
+
+- Sensitive data
+
+- Documentation
+
+- REST: HTTP methods, headers and status codes, consistent URL hierarchy and/or naming structure
+
+- Reread Evaluation constraints
+
+
+-----------------------------------------------------------------
+
 QUESTIONS :
 
-- userid / tripid / placeid: Est-il utile de créer manuellement les ID's ?
-    - Pour avoir un élément unique
-    - Pour travailler avec des ID's simples
-    - Si non; comment est-ce qu'on peut travailler avec les ID's automatiquement ? (routes)
-    
-- Expliquer "Unique Validator" => user.js / trip.js / place.js
-    - Est-il permis d'utiliser: npm install mongoose-unique-validator?
-      => var uniqueValidator = require('mongoose-unique-validator');
-         userSchema.plugin(uniqueValidator);
+- models/place.js: Geolocalisation & Picture in Schema correct?
 
-- Comment on intègre photo et geolocalisation dans le schema?
+- models/place.js: How to use correct timezone for date.now in the Schema?
 
-- Où est-ce qu'on peut tester les conditions définies ?
-
-- Comment on écrit DELETE et PATCH? 
-- Comment on écrit les deux derniers GET?
-
-- Quelles sont les étapes prochaines?

@@ -1,13 +1,15 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const User = require("./user");
+
 
 /**
- * Define the schema for trips(ID, description, creation Date, last modification date)
+ * Define the schema for trips
  */
 const tripSchema = new Schema({
     tripid: {
         type: Number,
-        required: true,
+        // required: true,
         unique: true,
         validate: {
             isAsync: true,
@@ -31,31 +33,34 @@ const tripSchema = new Schema({
         type: Date,
         default: Date.now
     },
-    tripCreator:{
-        type: Schema.Types.ObjectId,
+    tripCreator: {
+        type: Number,
         ref: 'User',
-        default: null,
+        required: 'Trip Creator is required',
         validate: {
             isAsync: true,
-            // Manually validate uniqueness to send a "pretty" validation error
             validator: validateCreator
         }
-    }
+    },
 });
 
-/**
- * Add a virtual "directorHref" property:
- *
- * * "movie.directorHref" will return the result of calling getDirectorHref with the movie as this
- * * "movie.directorHref = value" will return the result of calling setDirectorHref with the movie as this and value as an argument
- */
-tripSchema.virtual('creatorHref').get(getCreatorHref).set(setCreatorHref);
-
-// Customize the behavior of trip.toJSON() (called when using res.send)
-tripSchema.set('toJSON', {
-  transform: transformJsonTrip, // Modify the serialized JSON with a custom function
-  virtuals: true // Include virtual properties when serializing documents to JSON
+// Define a pre-save method for tripSchema: Creation of automatic tripid
+tripSchema.pre('save', function (next) {
+    this.constructor.find().sort('-tripid').limit(1).exec((err, tripList) => {
+        if (err) {
+            next(err);
+        } else {
+            if (tripList.length === 0) {
+                this.tripid = 1;
+                next();
+            } else {
+                this.tripid = tripList[0].tripid + 1;
+                next();
+            }
+        }
+    });
 });
+
 
 /**
  * Given a trip, calls the callback function with true if no trip exists with that id
@@ -71,70 +76,20 @@ function validateTripidUniqueness(value, callback) {
   });
 }
 
-function validateCreator(value, callback) {
-  if (!value && !this._creatorHref) {
-    this.invalidate('creatorHref', 'Path `creatorHref` is required', value, 'required');
-    return callback();
-  } else if (!ObjectId.isValid(value)) {
-    this.invalidate('creatorHref', 'Path `creatorHref` is not a valid User reference', this._creatorHref, 'resourceNotFound');
-    return callback();
-  }
 
-  mongoose.model('User').findOne({ userid: ObjectId(value) }).exec(function(err, user) {
-    if (err || !user) {
-      this.invalidate('creatorHref', 'Path `creatorHref` does not reference a User that exists', this._creatorHref, 'resourceNotFound');
+/**
+ * Connection with User
+ */
+function validateCreator(value, callback){
+  User.findOne({ 'userid' : value }, function (err, tripCreator){
+    if(tripCreator){
+      callback(true);
+    } else {
+      callback(false);
     }
-
-    callback();
   });
 }
 
-/**
- * Returns the hyperlink to the trip's creator.
- * (If the creator has been populated, the _id will be extracted from it.)
- */
-function getCreatorHref() {
-  return `/user/${this.creator.userid || this.creator}`;
-}
 
-/**
- * Sets the trip's creator from a user hyperlink.
- */
-function setCreatorHref(value) {
-
-  // Store the original hyperlink 
-  this._creatorHref = value;
-
-  // Remove "/user" from the beginning of the value
-  const userId = value.replace(/^\/user\//, '');
-
-  if (ObjectId.isValid(userId)) {
-    // Set the creator if the value is a valid MongoDB ObjectId
-    this.creator = userId;
-  } else {
-    // Unset the creator otherwise
-    this.creator = null;
-  }
-}
-
-/**
- * Removes extra MongoDB properties from serialized movies,
- * and includes the creator's data if it has been populated.
- */
-function transformJsonTrip(doc, json, options) {
-
-  // Remove MongoDB userid(there's a default virtual "id" property)
-  delete json.userid;
-
-  if (json.creator instanceof ObjectId) {
-    // Remove the creator property by default (there's a "creatorHref" virtual property)
-    delete json.creator;
-  } else {
-    // If the creator was populated, include it in the serialization
-    json.creator = doc.creator.toJSON();
-  }
-
-  return json;
-}
 // Create the model from the schema and export it
 module.exports = mongoose.model('Trip', tripSchema);

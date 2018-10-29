@@ -65,7 +65,7 @@ router.patch('/:tripid', utils.requireJson, loadTripFromParamsMiddleware, functi
     req.trip.tripDescription = req.body.tripDescription;
   }
 
-    req.trip.set("tripLastModDate",Date.now());
+  req.trip.set("tripLastModDate",Date.now());
     
   req.trip.save(function(err, savedTrip) {
     if (err) {

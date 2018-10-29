@@ -1,5 +1,3 @@
-// TODO: id automatic creation
-
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
@@ -9,7 +7,7 @@ const Schema = mongoose.Schema;
 const userSchema = new Schema({
     userid: {
         type: Number,
-        required: true,
+        //required: true,
         unique: true,
         validate: {
             isAsync: true,
@@ -36,6 +34,23 @@ const userSchema = new Schema({
 });
 
 
+// Define a pre-save method for userSchema: Creation of automatic userid
+userSchema.pre('save', function (next) {
+    this.constructor.find().sort('-userid').limit(1).exec((err, userList) => {
+        if (err) {
+            next(err);
+        } else {
+            if (userList.length === 0) {
+                this.userid = 1;
+                next();
+            } else {
+                this.userid = userList[0].userid + 1;
+                next();
+            }
+        }
+    });
+});
+
 
 /**
  * Verify if email is valid using regular expression
@@ -51,13 +66,13 @@ function validateEmail(email) {
  * (or the only person that exists is the same as the person being validated).
  */
 function validateUseridUniqueness(value, callback) {
-  const user = this;
-    if (!user.isNew){
+    const user = this;
+    if (!user.isNew) {
         return callback(true)
     }
-  this.constructor.findOne().where('userid').equals(value).exec(function(err, existingUser) {
-    callback(!err && !existingUser);
-  });
+    this.constructor.findOne().where('userid').equals(value).exec(function (err, existingUser) {
+        callback(!err && !existingUser);
+    });
 }
 
 // Create the model from the schema and export it

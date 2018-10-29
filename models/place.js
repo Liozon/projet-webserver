@@ -1,15 +1,14 @@
-// TODO: placeGeolocalisation & placePicture in Schema
-
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const Trip = require("./trip");
 
 /**
- * Define the schema for places(ID, desciption, geolocalisation, picture, creation Date, last modification Date)
+ * Define the schema for places
  */
 const placeSchema = new Schema({
     placeid: {
         type: Number,
-        required: true,
+        //required: true,
         unique: true,
         validate: {
             isAsync: true,
@@ -25,12 +24,13 @@ const placeSchema = new Schema({
     placeDescription: {
         type: String
     },
-    placeGeolocalisation: {
-        
-    },
+    /* placeGeolocalisation: {
+        type: String,
+        coordinates: Number
+    }, */
     placePicture: {
-        data: Buffer, 
-        contentType: String
+        type: String,
+        default: "https://muggli.one/heig/webs/missing-img.png"
     },
     placeCreationDate: {
         type: Date,
@@ -39,7 +39,43 @@ const placeSchema = new Schema({
     placeLastModDate: {
         type: Date,
         default: Date.now
+    },
+    placeLatitude: {
+        type: Number,
+        default: 0.000000,
+        required: 'The latitude is required'
+    },
+    placeLongitude: {
+        type: Number,
+        default: 0.000000,
+        required: 'The longitude is required'
+    },
+    placeCorrTrip:{
+        type: Number,
+        ref: 'Trip',
+        required: 'Correspondig trip is required',
+        validate: {
+            isAsync: true,
+            validator: validateTrip
+        }
     }
+});
+
+// Define a pre-save method for placeSchema: Creation of automatic placeid
+placeSchema.pre('save', function (next) {
+    this.constructor.find().sort('-placeid').limit(1).exec((err, placeList) => {
+        if (err) {
+            next(err);
+        } else {
+            if (placeList.length === 0) {
+                this.placeid = 1;
+                next();
+            } else {
+                this.placeid = placeList[0].placeid + 1;
+                next();
+            }
+        }
+    });
 });
 
 /**
@@ -55,6 +91,21 @@ function validatePlaceidUniqueness(value, callback) {
     callback(!err && !existingPlace);
   });
 }
+
+
+/**
+ * Connection with Trip
+ */
+function validateTrip(value, callback){
+  Trip.findOne({ 'tripid' : value }, function (err, placeCorrTrip){
+    if(placeCorrTrip){
+      callback(true);
+    } else {
+      callback(false);
+    }
+  });
+}
+
 
 // Create the model from the schema and export it
 module.exports = mongoose.model('Place', placeSchema);
