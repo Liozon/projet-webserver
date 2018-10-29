@@ -14,8 +14,8 @@ const config = require('../config');
 router.post('/', utils.requireJson, function (req, res, next) {
 
     //Validate request
-    if (!req.body.content) {
-        res.status(404);
+    if (!req.body) {
+        res.status(400);
     }
 
     // Create a new document from the JSON in the request body

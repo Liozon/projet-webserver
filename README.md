@@ -69,7 +69,7 @@ Routes :
 
 ToDo:
 
-ap- last two GET routes
+- last two GET routes
 
 - User management: Registration & Authentication
 
@@ -92,11 +92,7 @@ ap- last two GET routes
 
 QUESTIONS :
 
-- models/user.js 43:58 Automatic ID creation doesn't work (Pre middleware)
-
 - models/place.js: Geolocalisation & Picture in Schema correct?
 
 - models/place.js: How to use correct timezone for date.now in the Schema?
-
-- Connection of ressources: Are they connected correctly or is the connection too simple? 
 

@@ -15,9 +15,10 @@ const userSchema = new Schema({
             validator: validateUseridUniqueness,
             message: 'User {VALUE} already exists'
         }
-    }, 
+    },
     userName: {
         type: String,
+        unique: true,
         required: 'Username is required',
         minlength: 3,
         maxlength: 30,
@@ -41,21 +42,21 @@ const userSchema = new Schema({
 
 
 // Define a pre-save method for userSchema: Creation of automatic userid
-userSchema.pre('save', function(next) {
-    
-    if (this.userid === null) {
-        
-        userSchema.find().sort('userid').limit(1).exec(function (err, userid) {
+userSchema.pre('save', function (next) {
+    this.constructor.find().sort('-userid').limit(1).exec((err, userList) => {
         if (err) {
-            this.userid = 1;
+            next(err);
+        } else {
+            if (userList.length === 0) {
+                this.userid = 1;
+                next();
+            } else {
+                this.userid = userList[0].userid + 1;
+                next();
+            }
         }
-        this.userid = userid + 1;
-        });
-
-    }
-     
-    next();
-}); 
+    });
+});
 
 
 /**
@@ -72,13 +73,13 @@ function validateEmail(email) {
  * (or the only person that exists is the same as the person being validated).
  */
 function validateUseridUniqueness(value, callback) {
-  const user = this;
-    if (!user.isNew){
+    const user = this;
+    if (!user.isNew) {
         return callback(true)
     }
-  this.constructor.findOne().where('userid').equals(value).exec(function(err, existingUser) {
-    callback(!err && !existingUser);
-  });
+    this.constructor.findOne().where('userid').equals(value).exec(function (err, existingUser) {
+        callback(!err && !existingUser);
+    });
 }
 
 // Create the model from the schema and export it
