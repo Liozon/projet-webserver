@@ -85,3 +85,6 @@ QUESTIONS :
 
 - models/place.js: How to use correct timezone for date.now in the Schema?
 
+- Heroku: 'https://comem-webserv-2018-2019-e.herokuapp.com' ne fonctionne pas comme 'http://localhost:3000/'! Update? 
+  
+

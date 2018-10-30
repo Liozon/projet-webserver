@@ -4,7 +4,7 @@ const User = require("./user");
 
 
 /**
- * Define the schema for trips
+ * Define the schema for trips (tripid, tripName, tripDescription, tripCrationDate, tripLastModDate, tripCreator)
  */
 const tripSchema = new Schema({
     tripid: {
@@ -44,23 +44,6 @@ const tripSchema = new Schema({
     },
 });
 
-// Define a pre-save method for tripSchema: Creation of automatic tripid
-tripSchema.pre('save', function (next) {
-    this.constructor.find().sort('-tripid').limit(1).exec((err, tripList) => {
-        if (err) {
-            next(err);
-        } else {
-            if (tripList.length === 0) {
-                this.tripid = 1;
-                next();
-            } else {
-                this.tripid = tripList[0].tripid + 1;
-                next();
-            }
-        }
-    });
-});
-
 
 /**
  * Given a trip, calls the callback function with true if no trip exists with that id
@@ -89,6 +72,25 @@ function validateCreator(value, callback){
     }
   });
 }
+
+/**
+ * Define a pre-save method for tripSchema: Creation of automatic tripid
+ */
+tripSchema.pre('save', function (next) {
+    this.constructor.find().sort('-tripid').limit(1).exec((err, tripList) => {
+        if (err) {
+            next(err);
+        } else {
+            if (tripList.length === 0) {
+                this.tripid = 1;
+                next();
+            } else {
+                this.tripid = tripList[0].tripid + 1;
+                next();
+            }
+        }
+    });
+});
 
 
 // Create the model from the schema and export it

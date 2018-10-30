@@ -37,44 +37,7 @@ router.post('/', authenticate, utils.requireJson, function (req, res, next) {
  * GET: list all trips
  */
 router.get('/', function (req, res, next) {
-/*
-  Trip.find().sort('tripid').exec(function (err, trips) {
-    if (err) {
-      return next(err);
-    }
-    const tripIds = trips.map(trip => trip.tripid);
-    Place.aggregate([
-      {
-        $match: { // Select movies directed by the people we are interested in
-          placeCorrTrip: { $in: tripIds }
-        }
-      },
-      {
-        $group: { // Group the documents by director ID
-          _id: '$placeCorrTrip',
-          placesCount: { // Count the number of movies for that ID
-            $sum: 1
-          }
-        }
-      }
-    ], function (err, results) {
-      if (err) {
-        return next(err);
-      }
-      const tripsJson = trips.map(trip => trip.toJSON());
-      results.forEach(function(result) {
-        // Get the director ID (that was used to $group)...
-        const resultId = result._id.toString();
-        // Find the corresponding person...
-        const correspondingTrip = tripsJson.find(trip => trip.tripid == resultId);
-        // And attach the new property
-        correspondingTrip.placesCount = result.placesCount;
-      });
-      // Send the enriched response
-      res.send(tripsJson);
-    });
-  });
-*/
+
     Trip.find().count(function (err, total) {
         if (err) {
             return next(err);
@@ -100,7 +63,7 @@ router.get('/', function (req, res, next) {
         }
         // Apply skip and limit to select the correct page of elements
         query = query.skip((page - 1) * pageSize).limit(pageSize);
-        
+
         res.set('Pagination-Page', page);
         res.set('Pagination-PageSize', pageSize);
         res.set('Pagination-Total', total);
@@ -109,7 +72,41 @@ router.get('/', function (req, res, next) {
             if (err) {
                 return next(err);
             }
-            res.send(trips);
+
+            const tripIds = trips.map(trip => trip.tripid);
+            Place.aggregate([
+                {
+                    $match: { // Select movies directed by the people we are interested in
+                        placeCorrTrip: {
+                            $in: tripIds
+                        }
+                    }
+      },
+                {
+                    $group: { // Group the documents by director ID
+                        _id: '$placeCorrTrip',
+                        placesCount: { // Count the number of movies for that ID
+                            $sum: 1
+                        }
+                    }
+      }
+    ], function (err, results) {
+                if (err) {
+                    return next(err);
+                }
+                const tripsJson = trips.map(trip => trip.toJSON());
+                results.forEach(function (result) {
+                    // Get the director ID (that was used to $group)...
+                    const resultId = result._id.toString();
+                    // Find the corresponding person...
+                    const correspondingTrip = tripsJson.find(trip => trip.tripid == resultId);
+                    // And attach the new property
+                    correspondingTrip.placesCount = result.placesCount;
+                });
+                // Send the enriched response
+                res.send(tripsJson);
+            });
+
         });
     });
 });
@@ -118,13 +115,15 @@ router.get('/', function (req, res, next) {
  * GET: list one trip
  */
 router.get('/:tripid', function (req, res, next) {
-  const tripid = req.params.tripid;
-  Trip.findOne({ tripid: tripid }).exec(function (err, trip) {
-    if (err) {
-      return next(err);
-    }
-    res.send(trip);
-  });
+    const tripid = req.params.tripid;
+    Trip.findOne({
+        tripid: tripid
+    }).exec(function (err, trip) {
+        if (err) {
+            return next(err);
+        }
+        res.send(trip);
+    });
 });
 
 
@@ -133,12 +132,14 @@ router.get('/:tripid', function (req, res, next) {
  */
 router.get('/agg/:tripid', function (req, res, next) {
 
-  Place.find({ placeCorrTrip: req.params.tripid }).populate().exec(function (err, place) {
-    if (err) {
-      return next(err);
-    }
-    res.send(place);
-  })
+    Place.find({
+        placeCorrTrip: req.params.tripid
+    }).populate().exec(function (err, place) {
+        if (err) {
+            return next(err);
+        }
+        res.send(place);
+    })
 });
 
 /* 
@@ -146,19 +147,12 @@ router.get('/agg/:tripid', function (req, res, next) {
  */
 router.patch('/:tripid', utils.requireJson, loadTripFromParamsMiddleware, function (req, res, next) {
 
-  // Update properties present in the request body
-  if (req.body.tripName !== undefined) {
-    req.trip.tripName = req.body.tripName;
-  }
-  if (req.body.tripDescription !== undefined) {
-    req.trip.tripDescription = req.body.tripDescription;
-  }
-
-  req.trip.set("tripLastModDate", Date.now());
-
-  req.trip.save(function (err, savedTrip) {
-    if (err) {
-      return next(err);
+    // Update properties present in the request body
+    if (req.body.tripName !== undefined) {
+        req.trip.tripName = req.body.tripName;
+    }
+    if (req.body.tripDescription !== undefined) {
+        req.trip.tripDescription = req.body.tripDescription;
     }
 
     req.trip.set("tripLastModDate", Date.now());
@@ -168,9 +162,17 @@ router.patch('/:tripid', utils.requireJson, loadTripFromParamsMiddleware, functi
             return next(err);
         }
 
+        req.trip.set("tripLastModDate", Date.now());
 
-        debug(`Updated Trip "${savedTrip.tripName}"`);
-        res.send(savedTrip);
+        req.trip.save(function (err, savedTrip) {
+            if (err) {
+                return next(err);
+            }
+
+
+            debug(`Updated Trip "${savedTrip.tripName}"`);
+            res.send(savedTrip);
+        });
     });
 });
 
@@ -203,12 +205,12 @@ function loadTripFromParamsMiddleware(req, res, next) {
         tripid: tripid
     });
 
-  query.exec(function (err, trip) {
-    if (err) {
-      return next(err);
-    } else if (!trip) {
-      return tripNotFound(res, tripid);
-    }
+    query.exec(function (err, trip) {
+        if (err) {
+            return next(err);
+        } else if (!trip) {
+            return tripNotFound(res, tripid);
+        }
         req.trip = trip;
         next();
     });
@@ -244,7 +246,7 @@ function authenticate(req, res, next) {
             req.currentUserid = payload.sub;
             next(); // Pass the ID of the authenticated user to the next middleware.
         }
-    })
+    });
 }
 
 module.exports = router;

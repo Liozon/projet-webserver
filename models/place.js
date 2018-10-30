@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 const Trip = require("./trip");
 
 /**
- * Define the schema for places
+ * Define the schema for places(placeid, placeName, placeDescription, placePicture, placeCreationDate, placeLastModDate, placeLatitude, placeLongitude, placeCorrTrip)
  */
 const placeSchema = new Schema({
     placeid: {
@@ -61,22 +61,6 @@ const placeSchema = new Schema({
     }
 });
 
-// Define a pre-save method for placeSchema: Creation of automatic placeid
-placeSchema.pre('save', function (next) {
-    this.constructor.find().sort('-placeid').limit(1).exec((err, placeList) => {
-        if (err) {
-            next(err);
-        } else {
-            if (placeList.length === 0) {
-                this.placeid = 1;
-                next();
-            } else {
-                this.placeid = placeList[0].placeid + 1;
-                next();
-            }
-        }
-    });
-});
 
 /**
  * Given a place, calls the callback function with true if no place exists with that id
@@ -105,6 +89,26 @@ function validateTrip(value, callback){
     }
   });
 }
+
+
+/**
+ * Define a pre-save method for placeSchema: Creation of automatic placeid
+ */
+placeSchema.pre('save', function (next) {
+    this.constructor.find().sort('-placeid').limit(1).exec((err, placeList) => {
+        if (err) {
+            next(err);
+        } else {
+            if (placeList.length === 0) {
+                this.placeid = 1;
+                next();
+            } else {
+                this.placeid = placeList[0].placeid + 1;
+                next();
+            }
+        }
+    });
+});
 
 
 // Create the model from the schema and export it
