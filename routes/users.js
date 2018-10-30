@@ -9,22 +9,13 @@ const config = require('../config');
 
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
+
 //Retrieve the secret key from our configuration
 const secretKey = process.env.JWT_KEY || 'dfjsf';
 
-/* 
- * POST: create a new user 
- */
-/**
- * @api {get} /users/:id Request a user's information
- * @apiName GetUser
- * @apiGroup User
- *
- * @apiParam {Number} id Unique identifier of the user
- *
- * @apiSuccess {String} firstName First name of the user
- * @apiSuccess {String} lastName  Last name of the user
- */
+
+/*
+// POST: Create a user (without authentication)
 router.post('/', utils.requireJson, function (req, res, next) {
     // Create a new document from the JSON in the request body
     const newUser = new User(req.body);
@@ -36,45 +27,48 @@ router.post('/', utils.requireJson, function (req, res, next) {
         debug(`Created user "${savedUser.email}"`);
         // Send the saved document in the response
         res.status(201)
-            //.set('Location',`${config.baseUrl}/api/people/${savedPerson._id}`)
+            //.set('Location',`${config.baseUrl}/api/people/${savedUser._id}`)
             .send(savedUser);
     });
 });
-
-/* 
- * POST: create a new user 
- */
-/*router.post('/', utils.requireJson, function(req, res, next) {
-  // Create a new document from the JSON in the request body
-  let newUser = req.body;
-  bcrypt.hash(newUser.password, saltRounds, function (err, hash){
-      newUser.password = hash;
-       const newUserDocument = new User (newUser);
-      
-        // Save that document
-  newUserDocument.save(function(err, savedUser) {
-    if (err) {
-      return next(err);
-    }
-      debug(`Created user "${savedUser.email}"`);
-    // Send the saved document in the response
-      
-    res
-        .status(201)
- //.set('Location',`${config.baseUrl}/api/people/${savedPerson._id}`)
-        .send(savedUser);
-  });
-  })  
-});
 */
 
-/* 
- * POST: signup
+
+/**
+ * @api {post} /users/signup Create a user
+ * @apiName CreateUser
+ * @apiGroup User
+ * @apiVersion 1.0.0
+ * @apiDescription Registers a new user.
+ *
+ * @apiUse UserInRequestBody
+ * @apiUse UserInResponseBody
+ * @apiUse UserValidationError
+ *
+ * @apiExample Example
+ *     POST /users/signup HTTP/1.1
+ *     Content-Type: application/json
+ *
+ *     {
+ *       "email": "user1@email.com",
+ *       "password": "user1password"
+ *     }
+ *
+ * @apiSuccessExample 201 Created
+ *     HTTP/1.1 201 Created
+ *     Content-Type: application/json
+ *     Location: https://comem-webserv-2018-2019-e.herokuapp.com/users/1
+ *
+ *     {
+ *       "_id": "5bd8b53ffc7de055c4ca07aa",
+ *       "userid": 1,
+ *       "email": "user1@email.com",
+ *       "password": "$2b$10$ju7qmV4h6syfEC313nJ4FeZ11Z5AM/tU6roiRIHytViwUuqdtNZgC",
+ *       "registrationDate": "2018-10-30T19:47:11.613Z"
+ *     }
  */
 router.post('/signup', (req, res, next) => {
-    User.find({
-            email: req.body.email
-        })
+    User.find({email: req.body.email})
         .exec()
         .then(user => {
             if (user.length >= 1) {
@@ -111,38 +105,35 @@ router.post('/signup', (req, res, next) => {
         });
 });
 
-/* 
- * POST: create a new user 
- 
-router.post('/', utils.requireJson, function (req, res, next) {
 
-    //Validate request
-    if (!req.body) {
-        res.status(400);
-    }
-
-    // Create a new document from the JSON in the request body
-    const newUser = new User(req.body);
-    // Save that document
-    newUser.save(function (err, savedUser) {
-        if (err) {
-            res.status(500);
-            return next(err);
-        }
-        debug(`Created user "${savedUser.userName}"`);
-        // Send the saved document in the response
-        res
-            .status(201)
-            .set('Location',`${config.baseUrl}/users/${savedUser.userid}`)
-            .send(savedUser);
-
-
-    });
-});
-*/
-
-/* 
- * POST: login
+/**
+ * @api {post} /users/login Login a user
+ * @apiName LoginUser
+ * @apiGroup User
+ * @apiVersion 1.0.0
+ * @apiDescription Login an existing user.
+ *
+ * @apiUse UserInRequestBody
+ * @apiUse UserLoginError
+ *
+ * @apiExample Example
+ *     POST /users/login HTTP/1.1
+ *     Content-Type: application/json
+ *
+ *     {
+ *       "email": "user1@email.com",
+ *       "password": "user1password"
+ *     }
+ *
+ * @apiSuccessExample 200 Ok
+ *     HTTP/1.1 200 Ok
+ *     Content-Type: application/json
+ *     Location: https://comem-webserv-2018-2019-e.herokuapp.com/users/1
+ *
+ *     {
+ *       "message": "Auth successful",
+ *       "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQGVtYWlsLmNvbSIsInVzZXJpZCI6MSwiaWF0IjoxNTQwOTMwMjE1LCJleHAiOjE1NDE1MzUwMTV9.TGkLNJdB1ls9gI0JhUOdPqoDzSAjqVbI0971BAY1E_o"
+ *     }
  */
 router.post("/login", (req, res, next) => {
     User.find({
@@ -202,8 +193,41 @@ router.post("/login", (req, res, next) => {
 });
 
 
-/* 
- * GET: list all users
+/**
+ * @api {get} /users List users
+ * @apiName RetrieveUsers
+ * @apiGroup User
+ * @apiVersion 1.0.0
+ * @apiDescription Retrieves a paginated list of users sorted by userid (in ascending order).
+ *
+ * @apiUse UserInResponseBody
+ *
+ * @apiParam (URL query parameters) {String} [gender] Select only people of the specified gender
+ *
+ * @apiExample Example
+ *     GET /user?gender=male&page=2&pageSize=50 HTTP/1.1
+ *
+ * @apiSuccessExample 200 OK
+ *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
+ *     Link: &lt;https://evening-meadow-25867.herokuapp.com/user?page=1&pageSize=50&gt;; rel="first prev"
+ *
+ *     [
+ *       {
+ *         "_id": "5bd8b53ffc7de055c4ca07aa",
+ *         "userid": 1,
+ *         "email": "user1@email.com",
+ *         "password": "$2b$10$ju7qmV4h6syfEC313nJ4FeZ11Z5AM/tU6roiRIHytViwUuqdtNZgC",
+ *         "registrationDate": "2018-10-30T19:47:11.613Z"
+ *       },
+ *       {
+ *         "_id": "5bd8c61c580be55df4452243",
+ *         "userid": 2,
+ *         "email": "user2@email.com",
+ *         "password": "$2b$10$NWz7jXlfvPH1Bqk09QriSewmnCt780wThfqZQGTcQvMp9MUP9QjwS",
+ *         "registrationDate": "2018-10-30T20:59:08.422Z"
+ *       }
+ *     ]
  */
 router.get('/', function (req, res, next) {
     User.find().sort('userid').exec(function (err, users) {
@@ -213,8 +237,36 @@ router.get('/', function (req, res, next) {
         res.send(users);
     });
 });
-/* 
- * GET: list one user
+
+
+/**
+ * @api {get} /users/:userid List one user
+ * @apiName RetrieveUser
+ * @apiGroup User
+ * @apiVersion 1.0.0
+ * @apiDescription Show one user.
+ *
+ * @apiUse UserInResponseBody
+ *
+ * @apiParam (URL query parameters) {String} [gender] Select only people of the specified gender
+ *
+ * @apiExample Example
+ *     GET /user?gender=male&page=2&pageSize=50 HTTP/1.1
+ *
+ * @apiSuccessExample 200 OK
+ *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
+ *     Link: &lt;https://evening-meadow-25867.herokuapp.com/user?page=1&pageSize=50&gt;; rel="first prev"
+ *
+ *     [
+ *       {
+ *         "_id": "5bd8b53ffc7de055c4ca07aa",
+ *         "userid": 1,
+ *         "email": "user1@email.com",
+ *         "password": "$2b$10$ju7qmV4h6syfEC313nJ4FeZ11Z5AM/tU6roiRIHytViwUuqdtNZgC",
+ *         "registrationDate": "2018-10-30T19:47:11.613Z"
+ *       }
+ *     ]
  */
 router.get('/:userid', function (req, res, next) {
     const userid = req.params.userid;
@@ -257,13 +309,13 @@ router.patch('/:userid', utils.requireJson, loadUserFromParamsMiddleware, functi
 /* 
  * DELETE: Delete an existing user 
  */
-router.delete('/:_id', loadUserFromParamsMiddleware, function (req, res, next) {
+router.delete('/:userid', loadUserFromParamsMiddleware, function (req, res, next) {
     // remove the user
     req.user.remove(function (err) {
         if (err) {
             return next(err);
         }
-        debug(`Deleted person "${req.user.email}"`);
+        debug(`Deleted user with email: "${req.user.email}"`);
         res.sendStatus(204);
     });
 });
@@ -350,5 +402,78 @@ function authenticate(req, res, next) {
     }
   ], callback);
 }*/
+
+/**
+ * @apiDefine UserInRequestBody
+ * @apiParam (Request body) {String{/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/}} email The email of the user (must be unique)
+ * @apiParam (Request body) {String} password The password of the user
+ */
+
+/**
+ * @apiDefine UserInResponseBody
+ * @apiSuccess (Response body) {String} _id A unique identifier for the user generated by the server
+ * @apiSuccess (Response body) {Number} userid The unique identifier of the user
+ * @apiSuccess (Response body) {String} email The email of the user
+ * @apiSuccess (Response body) {String} password The password of the user protected by a cryptographic hash function
+ * @apiSuccess (Response body) {Date} registrationDate The date at which the user was registered with default value Date.now
+ */
+
+/**
+ * @apiDefine UserValidationError
+ *
+ * @apiError (Error 4xx) {Object} 409/Conflict Error User's email already exists
+ * @apiError (Error 5xx) {Object} 500/InternalServerError Some of the user's properties are invalid
+ *
+ * @apiErrorExample {json} 409 Conflict
+ *     HTTP/1.1 409 Conflict
+ *     Content-Type: application/json
+ *
+ *     {
+ *       "message": "Mail exists"
+ *     }
+ *
+ * @apiErrorExample {json} 500 Internal Server Error
+ *     HTTP/1.1 500 Internal Server Error
+ *     Content-Type: application/json
+ *
+ *     {
+ *       "message": "User validation failed",
+ *       "error": {
+ *          "errors": {
+ *              "email": {
+ *                    "message": "Please fill a valid email adress",
+ *                    "name": "ValidatorError",
+ *                    "properties": {
+ *                        "message": "Please fill a valid email adress",
+ *                        "type": "user defined",
+ *                        "path": "email",
+ *                        "value": "foo"
+ *                    },
+ *                    "kind": "user defined",
+ *                    "path": "email",
+ *                    "value": "foo",
+ *                    "$isValidatorError": true
+ *                }
+ *            },
+ *            "_message": "User validation failed",
+ *            "message": "User validation failed: email: Please fill a valid email adress",
+ *            "name": "ValidationError"
+ *       }
+ *     }
+ */
+
+/**
+ * @apiDefine UserLoginError
+ *
+ * @apiError {Object} 401/Unauthorized Email or password is missing or is not autorized for login
+ *
+ * @apiErrorExample {json} 401 Unauthorized
+ *     HTTP/1.1 401 Unauthorized
+ *     Content-Type: application/json
+ *
+ *     {
+ *       "message": "Auth failed"
+ *     }
+ */
 
 module.exports = router;
