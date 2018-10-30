@@ -6,7 +6,6 @@ Cette API regroupe les tables suivantes :
 
 - user
     - userid
-    - userName 
     - email
     - password
     - registrationDate
@@ -43,8 +42,8 @@ Routes :
     - /trip/tripid ((get one trip))
     - /place/placeid ((get one place))
     
-=>  - /user/trips ((get all trips of a user))
-=>  - /trip/places ((get all places of a trip))
+    - /user/:userid/trips ((get all trips of a user))
+    - /trip/places ((get all places of a trip))
 
 
 - POST (Create a new resource)
@@ -69,30 +68,20 @@ Routes :
 
 ToDo:
 
-- last two GET routes
+- Aggregated data ((Julien))
 
-- User management: Registration & Authentication
+- Documentation ((Steffi))
 
-- Paginated list
+- REST: HTTP methods, headers and status codes, consistent URL hierarchy and/or naming structure ((Céline))
 
-- List with optional filters
-
-- Aggregated data
-
-- Sensitive data
-
-- Documentation
-
-- REST: HTTP methods, headers and status codes, consistent URL hierarchy and/or naming structure
-
-- Reread Evaluation constraints
+- Reread Evaluation constraints ((Céline))
 
 
 -----------------------------------------------------------------
 
 QUESTIONS :
 
-- models/place.js: Geolocalisation & Picture in Schema correct?
+- models/place.js:geolocalisation automatique?
 
 - models/place.js: How to use correct timezone for date.now in the Schema?
 

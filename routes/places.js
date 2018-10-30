@@ -5,90 +5,128 @@ const ObjectId = mongoose.Types.ObjectId;
 const Place = require('../models/place');
 const utils = require('./utils');
 const router = express.Router();
-
+const jwt = require("jsonwebtoken");
+//Retrieve the secret key from our configuration
+const secretKey = process.env.JWT_KEY || 'dfjsf';
 
 /* 
  * POST: create a new place 
  */
-router.post('/', utils.requireJson, function(req, res, next) {
-  // Create a new document from the JSON in the request body
-  const newPlace = new Place(req.body);
-  // Save that document
-  newPlace.save(function(err, savedPlace) {
-    if (err) {
-      return next(err);
-    }
-      
-      debug(`Created place "${savedPlace.placeName}"`);
-    // Send the saved document in the response
-    res
-        .status(201)
-        .send(savedPlace);
-  });
+router.post('/', authenticate, utils.requireJson, function (req, res, next) {
+    // Create a new document from the JSON in the request body
+    const newPlace = new Place(req.body);
+    // Save that document
+    newPlace.save(function (err, savedPlace) {
+        if (err) {
+            return next(err);
+        }
+
+        debug(`Created place "${savedPlace.placeName}"`);
+        // Send the saved document in the response
+        res
+            .status(201)
+            .send(savedPlace);
+    });
 });
 
 /* 
  * GET: list all places
  */
-router.get('/', function(req, res, next) {
-  Place.find().sort('placeid').exec(function(err, places) {
-    if (err) {
-      return next(err);
-    }
-    res.send(places);
-  });
+router.get('/', function (req, res, next) {
+    Place.find().count(function (err, total) {
+        
+        if (err) {
+            return next (err);
+        }
+
+        let query = Place.find().sort('placeid');
+
+        // Filter places by corresponding trip 
+        // tester: http://localhost:3000/places?placeCorrTrip=2
+        if (req.query.placeCorrTrip) {
+            query = query.where('placeCorrTrip').equals(req.query.placeCorrTrip);
+        }
+        
+        // Parse the "page" param (default to 1 if invalid)
+        let page = parseInt(req.query.page, 10);
+        if (isNaN(page) || page < 1) {
+            page = 1;
+        }
+        // Parse the "pageSize" param (default to 10 if invalid)
+        let pageSize = parseInt(req.query.pageSize, 10);
+        if (isNaN(pageSize) || pageSize < 0 || pageSize > 10) {
+            pageSize = 10;
+        }
+        // Apply skip and limit to select the correct page of elements
+        query = query.skip((page - 1) * pageSize).limit(pageSize);
+        
+        res.set('Pagination-Page', page);
+        res.set('Pagination-PageSize', pageSize);
+        res.set('Pagination-Total', total);
+
+        query.exec(function (err, places) {
+            if (err) {
+                return next(err);
+            }
+            res.send(places);
+        });
+
+    });
+
 });
 
 /* 
  * GET: list one place
  */
-router.get('/:placeid', function(req, res, next) {
-const placeid = req.params.placeid; 
-  Place.findOne({ placeid : placeid }).exec(function(err, place) {
-    if (err) {
-      return next(err);
-    }
-    res.send(place);
-  });
+router.get('/:placeid', function (req, res, next) {
+    const placeid = req.params.placeid;
+    Place.findOne({
+        placeid: placeid
+    }).exec(function (err, place) {
+        if (err) {
+            return next(err);
+        }
+        res.send(place);
+    });
 });
 
 /* 
  * PATCH: Modify an existing trip 
  */
-router.patch('/:placeid', utils.requireJson, loadPlaceFromParamsMiddleware, function(req, res, next) {
+router.patch('/:placeid', utils.requireJson, loadPlaceFromParamsMiddleware, function (req, res, next) {
 
-  // Update properties present in the request body
-  if (req.body.placeName !== undefined) {
-    req.place.placeName = req.body.placeName;
-  }
-  if (req.body.placeDescription !== undefined) {
-    req.place.placeDescription = req.body.placeDescription;
-  }
-
-    req.place.set("placeLastModDate", Date.now());
-    
-  req.place.save(function(err, savedPlace) {
-    if (err) {
-      return next(err);
+    // Update properties present in the request body
+    if (req.body.placeName !== undefined) {
+        req.place.placeName = req.body.placeName;
+    }
+    if (req.body.placeDescription !== undefined) {
+        req.place.placeDescription = req.body.placeDescription;
     }
 
+    req.place.set("placeLastModDate", Date.now());
 
-    debug(`Updated Place "${savedPlace.placeName}"`);
-    res.send(savedPlace);
-  });
+    req.place.save(function (err, savedPlace) {
+        if (err) {
+            return next(err);
+        }
+
+
+        debug(`Updated Place "${savedPlace.placeName}"`);
+        res.send(savedPlace);
+    });
 });
 
 /* 
  * DELETE: Delete an existing place 
  */
-router.delete('/:placeid', loadPlaceFromParamsMiddleware, function(req, res, next) {
-    
+router.delete('/:placeid', loadPlaceFromParamsMiddleware, function (req, res, next) {
+
     // remove the place
-    req.place.remove(function(err) {
+    req.place.remove(function (err) {
         if (err) {
             return next(err);
         }
-        
+
         debug(`Deleted place "${req.place.placeName}"`);
         res.sendStatus(204);
     });
@@ -100,29 +138,56 @@ router.delete('/:placeid', loadPlaceFromParamsMiddleware, function(req, res, nex
  */
 function loadPlaceFromParamsMiddleware(req, res, next) {
 
-  const placeid = req.params.placeid;
+    const placeid = req.params.placeid;
 
-  let query = Place.findOne({ placeid: placeid });
+    let query = Place.findOne({
+        placeid: placeid
+    });
 
-  query.exec(function(err, place) {
-    if (err) {
-      return next(err);
-    } else if (!place) {
-      return placeNotFound(res, placeid);
-    }
+    query.exec(function (err, place) {
+        if (err) {
+            return next(err);
+        } else if (!place) {
+            return placeNotFound(res, placeid);
+        }
 
-    req.place = place;
-    next();
-  });
+        req.place = place;
+        next();
+    });
 }
 
 /**
  * Responds with 404 Not Found and a message indicating that the place with the specified ID was not found.
  */
 function placeNotFound(res, placeid) {
-  return res.status(404).type('text').send(`No place found with ID ${placeid}`);
+    return res.status(404).type('text').send(`No place found with ID ${placeid}`);
 }
 
+/**
+ *  JWT authentication middleware
+ */
+function authenticate(req, res, next) {
+    // Ensure the header is present.
+    const authorization = req.get('Authorization');
+    if (!authorization) {
+        return res.status(401).send('Authorization header is missing');
+    }
+    // Check that the header has the correct format.
+    const match = authorization.match(/^Bearer (.+)$/);
+    if (!match) {
+        return res.status(401).send('Authorization header is not a bearer token');
+    }
+    // Extract and verify the JWT.
+    const token = match[1];
+    jwt.verify(token, secretKey, function (err, payload) {
+        if (err) {
+            return res.status(401).send('Your token is invalid or has expired');
+        } else {
+            req.currentUserid = payload.sub;
+            next(); // Pass the ID of the authenticated user to the next middleware.
+        }
+    })
+}
 
 
 module.exports = router;
