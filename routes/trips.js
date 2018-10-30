@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const Trip = require('../models/trip');
+const Place = require('../models/place');
 const utils = require('./utils');
 const router = express.Router();
 const formatLinkHeader = require('format-link-header');
@@ -36,6 +37,44 @@ router.post('/', authenticate, utils.requireJson, function (req, res, next) {
  * GET: list all trips
  */
 router.get('/', function (req, res, next) {
+/*
+  Trip.find().sort('tripid').exec(function (err, trips) {
+    if (err) {
+      return next(err);
+    }
+    const tripIds = trips.map(trip => trip.tripid);
+    Place.aggregate([
+      {
+        $match: { // Select movies directed by the people we are interested in
+          placeCorrTrip: { $in: tripIds }
+        }
+      },
+      {
+        $group: { // Group the documents by director ID
+          _id: '$placeCorrTrip',
+          placesCount: { // Count the number of movies for that ID
+            $sum: 1
+          }
+        }
+      }
+    ], function (err, results) {
+      if (err) {
+        return next(err);
+      }
+      const tripsJson = trips.map(trip => trip.toJSON());
+      results.forEach(function(result) {
+        // Get the director ID (that was used to $group)...
+        const resultId = result._id.toString();
+        // Find the corresponding person...
+        const correspondingTrip = tripsJson.find(trip => trip.tripid == resultId);
+        // And attach the new property
+        correspondingTrip.placesCount = result.placesCount;
+      });
+      // Send the enriched response
+      res.send(tripsJson);
+    });
+  });
+*/
     Trip.find().count(function (err, total) {
         if (err) {
             return next(err);
@@ -72,24 +111,34 @@ router.get('/', function (req, res, next) {
             }
             res.send(trips);
         });
-
     });
-
 });
 
 /* 
  * GET: list one trip
  */
 router.get('/:tripid', function (req, res, next) {
-    const tripid = req.params.tripid;
-    Trip.findOne({
-        tripid: tripid
-    }).exec(function (err, trip) {
-        if (err) {
-            return next(err);
-        }
-        res.send(trip);
-    });
+  const tripid = req.params.tripid;
+  Trip.findOne({ tripid: tripid }).exec(function (err, trip) {
+    if (err) {
+      return next(err);
+    }
+    res.send(trip);
+  });
+});
+
+
+/* 
+ * GET: list one trip aggreggate
+ */
+router.get('/agg/:tripid', function (req, res, next) {
+
+  Place.find({ placeCorrTrip: req.params.tripid }).populate().exec(function (err, place) {
+    if (err) {
+      return next(err);
+    }
+    res.send(place);
+  })
 });
 
 /* 
@@ -97,12 +146,19 @@ router.get('/:tripid', function (req, res, next) {
  */
 router.patch('/:tripid', utils.requireJson, loadTripFromParamsMiddleware, function (req, res, next) {
 
-    // Update properties present in the request body
-    if (req.body.tripName !== undefined) {
-        req.trip.tripName = req.body.tripName;
-    }
-    if (req.body.tripDescription !== undefined) {
-        req.trip.tripDescription = req.body.tripDescription;
+  // Update properties present in the request body
+  if (req.body.tripName !== undefined) {
+    req.trip.tripName = req.body.tripName;
+  }
+  if (req.body.tripDescription !== undefined) {
+    req.trip.tripDescription = req.body.tripDescription;
+  }
+
+  req.trip.set("tripLastModDate", Date.now());
+
+  req.trip.save(function (err, savedTrip) {
+    if (err) {
+      return next(err);
     }
 
     req.trip.set("tripLastModDate", Date.now());
@@ -147,13 +203,12 @@ function loadTripFromParamsMiddleware(req, res, next) {
         tripid: tripid
     });
 
-    query.exec(function (err, trip) {
-        if (err) {
-            return next(err);
-        } else if (!trip) {
-            return tripNotFound(res, tripid);
-        }
-
+  query.exec(function (err, trip) {
+    if (err) {
+      return next(err);
+    } else if (!trip) {
+      return tripNotFound(res, tripid);
+    }
         req.trip = trip;
         next();
     });
