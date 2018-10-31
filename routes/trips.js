@@ -8,13 +8,48 @@ const utils = require('./utils');
 const router = express.Router();
 const formatLinkHeader = require('format-link-header');
 const jwt = require("jsonwebtoken");
+
 //Retrieve the secret key from our configuration
 const secretKey = process.env.JWT_KEY || 'dfjsf';
 
 const links = {};
 
-/* 
- * POST: create a new trip 
+
+/**
+ * @api {post} /trips Create a trip
+ * @apiName CreateTrip
+ * @apiGroup Trip
+ * @apiVersion 1.0.0
+ * @apiDescription Create a new trip.
+ *
+ * @apiUse TripInRequestBody
+ * @apiUse TripInResponseBody
+ * @apiUse TripValidationError
+ *
+ * @apiExample Example
+ *     POST /trips HTTP/1.1
+ *     Content-Type: application/json
+ *
+ *     {
+ *       "tripName": "trip_1",
+ *       "tripDescription": "This is the description of the trip_1.",
+ *       "tripCreator": 1
+ *     }
+ *
+ * @apiSuccessExample 201 Created
+ *     HTTP/1.1 201 Created
+ *     Content-Type: application/json
+ *     Location: https://comem-webserv-2018-2019-e.herokuapp.com/users/1
+ *
+ *     {
+ *       "_id": "5bd9e744e80f0065a0c7fcd6",
+ *       "tripid": 1,
+ *       "tripName": "trip_1",
+ *       "tripDescription": "This is the description of the trip_1.",
+ *       "tripCreationDate": "2018-10-31T17:32:52.449Z",
+ *       "tripLastModDate": "2018-10-31T17:32:52.449Z",
+ *       "tripCreator": 1
+ *     }
  */
 router.post('/', authenticate, utils.requireJson, function (req, res, next) {
     // Create a new document from the JSON in the request body
@@ -33,8 +68,70 @@ router.post('/', authenticate, utils.requireJson, function (req, res, next) {
     });
 });
 
-/* 
- * GET: list all trips
+
+/**
+ * @api {get} /trips List trips
+ * @apiName RetrieveTrips
+ * @apiGroup Trip
+ * @apiVersion 1.0.0
+ * @apiDescription Retrieves a list of trips sorted by tripid (in ascending order).
+ *
+ * @apiUse TripInResponseBody
+ *
+ * @apiExample Example
+ *     GET /trips HTTP/1.1
+ *
+ * @apiSuccessExample 200 OK
+ *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
+ *     Location: https://comem-webserv-2018-2019-e.herokuapp.com/trips/page=1&pageSize=10
+ *
+ *     [
+ *       {
+ *         "_id": "5bd9e744e80f0065a0c7fcd6",
+ *         "tripid": 1,
+ *         "tripName": "trip_1",
+ *         "tripDescription": "This is the description of the trip_1.",
+ *         "tripCreationDate": "2018-10-31T17:32:52.449Z",
+ *         "tripLastModDate": "2018-10-31T17:32:52.449Z",
+ *         "tripCreator": 1
+ *       },
+ *       {
+ *         "_id": "5bd6bd0637fec753c40a89bb",
+ *         "tripid": 2,
+ *         "tripName": "trip_2",
+ *         "tripDescription": "This is the description of the trip_2.",
+ *         "tripCreationDate": "2018-10-29T07:55:50.995Z",
+ *         "tripLastModDate": "2018-10-29T07:55:50.995Z",
+ *         "tripCreator": 1
+ *       },
+ *       {
+ *         "_id": "5bd6cbe57aa3be18a856dfbf",
+ *         "tripid": 3,
+ *         "tripName": "trip_3",
+ *         "tripDescription": "This is the description of the trip_3.",
+ *         "tripCreationDate": "2018-10-29T08:59:17.167Z",
+ *         "tripLastModDate": "2018-10-29T08:59:17.167Z",
+ *         "tripCreator": 2
+ *       }
+ *     ]
+ *
+ * @apiSuccessExample 200 OK
+ *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
+ *     Location: https://comem-webserv-2018-2019-e.herokuapp.com/trips?tripCreator=2
+ *
+ *     [
+ *       {
+ *         "_id": "5bd6cbe57aa3be18a856dfbf",
+ *         "tripid": 3,
+ *         "tripName": "trip_3",
+ *         "tripDescription": "This is the description of the trip_3.",
+ *         "tripCreationDate": "2018-10-29T08:59:17.167Z",
+ *         "tripLastModDate": "2018-10-29T08:59:17.167Z",
+ *         "tripCreator": 2
+ *       }
+ *     ]
  */
 router.get('/', function (req, res, next) {
 
@@ -111,8 +208,35 @@ router.get('/', function (req, res, next) {
     });
 });
 
-/* 
- * GET: list one trip
+
+/**
+ * @api {get} /trips/:tripid Retrieve a trip
+ * @apiName RetrieveTrip
+ * @apiGroup Trip
+ * @apiVersion 1.0.0
+ * @apiDescription Retrieves one trip.
+ *
+ * @apiUse TripIdInUrlPath
+ * @apiUse TripInResponseBody
+ * @apiUse TripNotFoundError
+ *
+ * @apiExample Example
+ *     GET /trips/1 HTTP/1.1
+ *
+ * @apiSuccessExample 200 OK
+ *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
+ *     Location: https://comem-webserv-2018-2019-e.herokuapp.com/trips/1
+ *
+ *     {
+ *       "_id": "5bd9e744e80f0065a0c7fcd6",
+ *       "tripid": 1,
+ *       "tripName": "trip_1",
+ *       "tripDescription": "This is the description of the trip_1.",
+ *       "tripCreationDate": "2018-10-31T17:32:52.449Z",
+ *       "tripLastModDate": "2018-10-31T17:32:52.449Z",
+ *       "tripCreator": 1
+ *     }
  */
 router.get('/:tripid', function (req, res, next) {
     const tripid = req.params.tripid;
@@ -248,5 +372,65 @@ function authenticate(req, res, next) {
         }
     });
 }
+
+
+
+
+/**
+ * @apiDefine TripIdInUrlPath
+ * @apiParam (URL path parameters) {Number} tripid The unique identifier of the trip to retrieve
+ */
+
+/**
+ * @apiDefine TripInRequestBody
+ * @apiParam (Request body) {String{3..}} tripName The name of the trip
+ * @apiParam (Request body) {String} [tripDescription] The description of the trip
+ * @apiParam (Request body) {Number} tripCreator The userid of the creator of the trip
+ */
+
+/**
+ * @apiDefine TripInResponseBody
+ * @apiSuccess (Response body) {String} _id A unique identifier for the trip generated by the server
+ * @apiSuccess (Response body) {Number} tripid The unique identifier of the trip
+ * @apiSuccess (Response body) {String} tripName The name of the trip
+ * @apiSuccess (Response body) {String} tripDescription The description of the trip (if any)
+ * @apiSuccess (Response body) {Date} tripCreationDate The date at which the trip was created with default value Date.now of the trip (if any)
+ * @apiSuccess (Response body) {Date} tripLastModDate The date at which the trip was modified with default value Date.now
+ * @apiSuccess (Response body) {Number} tripCreator The userid of the creator of the trip
+ */
+
+/**
+ * @apiDefine TripNotFoundError
+ *
+ * @apiError {Object} 404/NotFound No trip was found corresponding to the tripid in the URL path
+ *
+ * @apiErrorExample {json} 404 Not Found
+ *     HTTP/1.1 404 Not Found
+ *     Content-Type: text/plain
+ *
+ *     No trip found with ID 1
+ */
+
+/**
+ * @apiDefine TripValidationError
+ *
+ * @apiError (Error 4xx) {Object} 401/Unauthorized tripCreator (user) is not authorized to create this trip.
+ * @apiError (Error 5xx) {Object} 500/InternalServerError Some of the trip's properties are invalid
+ *
+ * @apiErrorExample {json} 401 Unauthorized
+ *     HTTP/1.1 401 Unauthorized
+ *     Content-Type: application/json
+ *
+ *     Authorization header is missing
+ *
+ * @apiErrorExample {json} 500 Internal Server Error
+ *     HTTP/1.1 500 Internal Server Error
+ *     Content-Type: application/json
+ *
+ *     {
+ *       "message": Trip validation failed: tripName: Path `tripName` (`1`) is shorter than the minimum allowed length (3).
+ *     }
+ */
+
 
 module.exports = router;

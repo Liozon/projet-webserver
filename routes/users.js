@@ -68,7 +68,9 @@ router.post('/', utils.requireJson, function (req, res, next) {
  *     }
  */
 router.post('/signup', (req, res, next) => {
-    User.find({email: req.body.email})
+    User.find({
+            email: req.body.email
+        })
         .exec()
         .then(user => {
             if (user.length >= 1) {
@@ -198,19 +200,17 @@ router.post("/login", (req, res, next) => {
  * @apiName RetrieveUsers
  * @apiGroup User
  * @apiVersion 1.0.0
- * @apiDescription Retrieves a paginated list of users sorted by userid (in ascending order).
+ * @apiDescription Retrieves a list of users sorted by userid (in ascending order).
  *
  * @apiUse UserInResponseBody
  *
- * @apiParam (URL query parameters) {String} [gender] Select only people of the specified gender
- *
  * @apiExample Example
- *     GET /user?gender=male&page=2&pageSize=50 HTTP/1.1
+ *     GET /users HTTP/1.1
  *
  * @apiSuccessExample 200 OK
  *     HTTP/1.1 200 OK
  *     Content-Type: application/json
- *     Link: &lt;https://evening-meadow-25867.herokuapp.com/user?page=1&pageSize=50&gt;; rel="first prev"
+ *     Location: https://comem-webserv-2018-2019-e.herokuapp.com/users
  *
  *     [
  *       {
@@ -240,41 +240,38 @@ router.get('/', function (req, res, next) {
 
 
 /**
- * @api {get} /users/:userid List one user
+ * @api {get} /users/:userid Retrieve a user
  * @apiName RetrieveUser
  * @apiGroup User
  * @apiVersion 1.0.0
- * @apiDescription Show one user.
+ * @apiDescription Retrieves one user.
  *
+ * @apiUse UserIdInUrlPath
  * @apiUse UserInResponseBody
- *
- * @apiParam (URL query parameters) {String} [gender] Select only people of the specified gender
+ * @apiUse UserNotFoundError
  *
  * @apiExample Example
- *     GET /user?gender=male&page=2&pageSize=50 HTTP/1.1
+ *     GET /users/1 HTTP/1.1
  *
  * @apiSuccessExample 200 OK
  *     HTTP/1.1 200 OK
  *     Content-Type: application/json
- *     Link: &lt;https://evening-meadow-25867.herokuapp.com/user?page=1&pageSize=50&gt;; rel="first prev"
+ *     Location: https://comem-webserv-2018-2019-e.herokuapp.com/users/1
  *
- *     [
- *       {
- *         "_id": "5bd8b53ffc7de055c4ca07aa",
- *         "userid": 1,
- *         "email": "user1@email.com",
- *         "password": "$2b$10$ju7qmV4h6syfEC313nJ4FeZ11Z5AM/tU6roiRIHytViwUuqdtNZgC",
- *         "registrationDate": "2018-10-30T19:47:11.613Z"
- *       }
- *     ]
+ *     {
+ *       "_id": "5bd8b53ffc7de055c4ca07aa",
+ *       "userid": 1,
+ *       "email": "user1@email.com",
+ *       "password": "$2b$10$ju7qmV4h6syfEC313nJ4FeZ11Z5AM/tU6roiRIHytViwUuqdtNZgC",
+ *       "registrationDate": "2018-10-30T19:47:11.613Z"
+ *     }
  */
-router.get('/:userid', function (req, res, next) {
+router.get('/:userid', loadUserFromParamsMiddleware, function (req, res, next) {
     const userid = req.params.userid;
     User.findOne({
         userid: userid
     }).exec(function (err, user) {
         if (err) {
-            res.status(404);
             return next(err);
         }
         res
@@ -283,8 +280,40 @@ router.get('/:userid', function (req, res, next) {
     });
 });
 
-/* 
- * PATCH: Modify an existing user 
+
+/**
+ * @api {patch} /users/:userid Partially update a user
+ * @apiName PartiallyUpdateUser
+ * @apiGroup User
+ * @apiVersion 1.0.0
+ * @apiDescription Partially updates a user's data (only the properties found in the request body will be updated).
+ * All properties are optional.
+ *
+ * @apiUse UserIdInUrlPath
+ * @apiUse UserInRequestBody
+ * @apiUse UserInResponseBody
+ * @apiUse UserNotFoundError
+ * @apiUse UserValidationError
+ *
+ * @apiExample Example
+ *     PATCH /users/1 HTTP/1.1
+ *     Content-Type: application/json
+ *
+ *     {
+ *       "email": "user1@email.com"
+ *     }
+ *
+ * @apiSuccessExample 200 OK
+ *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
+ *
+ *     {
+ *       "_id": "5bd8b53ffc7de055c4ca07aa",
+ *       "userid": 1,
+ *       "email": "user1@email.com",
+ *       "password": "$2b$10$ju7qmV4h6syfEC313nJ4FeZ11Z5AM/tU6roiRIHytViwUuqdtNZgC",
+ *       "registrationDate": "2018-10-30T19:47:11.613Z"
+ *     }
  */
 router.patch('/:userid', utils.requireJson, loadUserFromParamsMiddleware, function (req, res, next) {
 
@@ -294,20 +323,95 @@ router.patch('/:userid', utils.requireJson, loadUserFromParamsMiddleware, functi
     }
     if (req.body.password !== undefined) {
         req.user.password = req.body.password;
+        
+        // Password Encryption
+        let hash = bcrypt.hashSync(req.user.password, 10);
+        req.user.password = hash;
     }
 
     req.user.save(function (err, savedUser) {
         if (err) {
             return next(err);
         }
+
         debug(`Updated User "${savedUser.email}"`);
         res
             .status(200)
             .send(savedUser);
     });
 });
-/* 
- * DELETE: Delete an existing user 
+
+
+/**
+ * @api {put} /users/:userid Update a user
+ * @apiName UpdateUser
+ * @apiGroup User
+ * @apiVersion 1.0.0
+ * @apiDescription Replaces all the user's data (the request body must represent a full, valid user).
+ *
+ * @apiUse UserIdInUrlPath
+ * @apiUse UserInRequestBody
+ * @apiUse UserInResponseBody
+ * @apiUse UserNotFoundError
+ * @apiUse UserValidationError
+ *
+ * @apiExample Example
+ *     PUT /users/1 HTTP/1.1
+ *     Content-Type: application/json
+ *
+ *     {
+ *       "email": "user1new@email.com",
+ *       "password": "user1newpassword"
+ *     }
+ *
+ * @apiSuccessExample 200 OK
+ *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
+ *
+ *     {
+ *       "_id": "5bd8b53ffc7de055c4ca07aa",
+ *       "userid": 1,
+ *       "email": "user1new@email.com",
+ *       "password": "$2b$10$f1ZgJx7NRbXOud0PJ01K1ul5iWd659E03ds4Mbl4N8ysNn99vw7Ge",
+ *       "registrationDate": "2018-10-30T19:47:11.613Z"
+ *     }
+ */
+router.put('/:userid', utils.requireJson, loadUserFromParamsMiddleware, function (req, res, next) {
+
+    // Update all properties (regardless of whether they are in the request body or not)
+    req.user.email = req.body.email;
+    req.user.password = req.body.password;
+    
+    // Password Encryption
+    let hash = bcrypt.hashSync(req.user.password, 10);
+    req.user.password = hash;
+
+    req.user.save(function (err, savedUser) {
+        if (err) {
+            return next(err);
+        }
+
+        debug(`Updated user "${savedUser.email}"`);
+        res.send(savedUser);
+    });
+});
+
+
+/**
+ * @api {delete} /users/:userid Delete a user
+ * @apiName DeleteUser
+ * @apiGroup User
+ * @apiVersion 1.0.0
+ * @apiDescription Permanently deletes a user.
+ *
+ * @apiUse UserIdInUrlPath
+ * @apiUse UserNotFoundError
+ *
+ * @apiExample Example
+ *     DELETE /users/1 HTTP/1.1
+ *
+ * @apiSuccessExample 204 No Content
+ *     HTTP/1.1 204 No Content
  */
 router.delete('/:userid', loadUserFromParamsMiddleware, function (req, res, next) {
     // remove the user
@@ -319,6 +423,8 @@ router.delete('/:userid', loadUserFromParamsMiddleware, function (req, res, next
         res.sendStatus(204);
     });
 });
+
+
 /**
  * Middleware that loads the user corresponding to the ID in the URL path.
  * Responds with 404 Not Found if the ID is not valid or the user doesn't exist.
@@ -373,35 +479,13 @@ function authenticate(req, res, next) {
     })
 }
 
-/* 
- * GET: list all trips of one user
+
+
+
+/**
+ * @apiDefine UserIdInUrlPath
+ * @apiParam (URL path parameters) {Number} userid The unique identifier of the user to retrieve
  */
-/*function countTripsFromUser(user, callback) {
-
-    // Do not perform the aggregation query if there are no user to retrieve trips for
-    if (user.length <= 0) {
-        return callback(undefined, []);
-    }
-
-    // Aggregate trips count by user (i.e. user ID)
-    Trip.aggregate([
-        {
-            $match: { // Select only trips directed by the user we are interested in
-                creator: {
-                    $in: user.map(user => user.userid)
-                }
-            }
-    },
-        {
-            $group: { // Count trips by creator
-                _id: '$creator',
-                tripsCount: {
-                    $sum: 1
-                }
-            }
-    }
-  ], callback);
-}*/
 
 /**
  * @apiDefine UserInRequestBody
@@ -419,9 +503,21 @@ function authenticate(req, res, next) {
  */
 
 /**
+ * @apiDefine UserNotFoundError
+ *
+ * @apiError {Object} 404/NotFound No user was found corresponding to the userid in the URL path
+ *
+ * @apiErrorExample {json} 404 Not Found
+ *     HTTP/1.1 404 Not Found
+ *     Content-Type: text/plain
+ *
+ *     No user found with ID 1
+ */
+
+/**
  * @apiDefine UserValidationError
  *
- * @apiError (Error 4xx) {Object} 409/Conflict Error User's email already exists
+ * @apiError (Error 4xx) {Object} 409/Conflict User's email already exists
  * @apiError (Error 5xx) {Object} 500/InternalServerError Some of the user's properties are invalid
  *
  * @apiErrorExample {json} 409 Conflict
@@ -475,5 +571,6 @@ function authenticate(req, res, next) {
  *       "message": "Auth failed"
  *     }
  */
+
 
 module.exports = router;

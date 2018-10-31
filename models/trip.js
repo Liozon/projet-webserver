@@ -17,9 +17,10 @@ const tripSchema = new Schema({
             validator: validateTripidUniqueness,
             message: 'Trip {VALUE} already exists'
         }
-    }, 
+    },
     tripName: {
         type: String,
+        minlength: 3,
         required: 'Name of the trip is required'
     },
     tripDescription: {
@@ -50,28 +51,31 @@ const tripSchema = new Schema({
  * (or the only trip that exists is the same as the trip being validated).
  */
 function validateTripidUniqueness(value, callback) {
-  const trip = this;
-    if (!trip.isNew){
+    const trip = this;
+    if (!trip.isNew) {
         return callback(true)
     }
-  this.constructor.findOne().where('tripid').equals(value).exec(function(err, existingTrip) {
-    callback(!err && !existingTrip );
-  });
+    this.constructor.findOne().where('tripid').equals(value).exec(function (err, existingTrip) {
+        callback(!err && !existingTrip);
+    });
 }
 
 
 /**
  * Connection with User
  */
-function validateCreator(value, callback){
-  User.findOne({ 'userid' : value }, function (err, tripCreator){
-    if(tripCreator){
-      callback(true);
-    } else {
-      callback(false);
-    }
-  });
+function validateCreator(value, callback) {
+    User.findOne({
+        'userid': value
+    }, function (err, tripCreator) {
+        if (tripCreator) {
+            callback(true);
+        } else {
+            callback(false);
+        }
+    });
 }
+
 
 /**
  * Define a pre-save method for tripSchema: Creation of automatic tripid
@@ -83,6 +87,8 @@ tripSchema.pre('save', function (next) {
         } else {
             if (tripList.length === 0) {
                 this.tripid = 1;
+                next();
+            } else if (this.tripid) {
                 next();
             } else {
                 this.tripid = tripList[0].tripid + 1;

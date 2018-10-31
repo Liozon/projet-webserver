@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Trip = require("./trip");
 
+
 /**
  * Define the schema for places(placeid, placeName, placeDescription, placePicture, placeCreationDate, placeLastModDate, placeLatitude, placeLongitude, placeCorrTrip)
  */
@@ -16,7 +17,7 @@ const placeSchema = new Schema({
             validator: validatePlaceidUniqueness,
             message: 'Place {VALUE} already exists'
         }
-    },  
+    },
     placeName: {
         type: String,
         required: 'Name of the place is required'
@@ -50,7 +51,7 @@ const placeSchema = new Schema({
         default: 0.000000,
         required: 'The longitude is required'
     },
-    placeCorrTrip:{
+    placeCorrTrip: {
         type: Number,
         ref: 'Trip',
         required: 'Correspondig trip is required',
@@ -67,27 +68,29 @@ const placeSchema = new Schema({
  * (or the only place that exists is the same as the place being validated).
  */
 function validatePlaceidUniqueness(value, callback) {
-  const place = this;
-    if (!place.isNew){
+    const place = this;
+    if (!place.isNew) {
         return callback(true)
     }
-  this.constructor.findOne().where('placeid').equals(value).exec(function(err, existingPlace) {
-    callback(!err && !existingPlace);
-  });
+    this.constructor.findOne().where('placeid').equals(value).exec(function (err, existingPlace) {
+        callback(!err && !existingPlace);
+    });
 }
 
 
 /**
  * Connection with Trip
  */
-function validateTrip(value, callback){
-  Trip.findOne({ 'tripid' : value }, function (err, placeCorrTrip){
-    if(placeCorrTrip){
-      callback(true);
-    } else {
-      callback(false);
-    }
-  });
+function validateTrip(value, callback) {
+    Trip.findOne({
+        'tripid': value
+    }, function (err, placeCorrTrip) {
+        if (placeCorrTrip) {
+            callback(true);
+        } else {
+            callback(false);
+        }
+    });
 }
 
 
@@ -102,12 +105,15 @@ placeSchema.pre('save', function (next) {
             if (placeList.length === 0) {
                 this.placeid = 1;
                 next();
+            } else if (this.placeid) {
+                next();
             } else {
                 this.placeid = placeList[0].placeid + 1;
                 next();
             }
         }
     });
+
 });
 
 
