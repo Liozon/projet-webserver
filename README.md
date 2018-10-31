@@ -43,7 +43,7 @@ Routes :
     - /place/placeid ((get one place))
     
     - /user/:userid/trips ((get all trips of a user))
-    - /trip/places ((get all places of a trip))
+    - /trip/:tripid/places ((get all places of a trip))
 
 
 - POST (Create a new resource)

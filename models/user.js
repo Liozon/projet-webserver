@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+
 /**
  * Define the schema for users (userid, email, password, registration Date)
  */
@@ -15,7 +16,7 @@ const userSchema = new Schema({
             validator: validateUseridUniqueness,
             message: 'User {VALUE} already exists'
         }
-    }, 
+    },
     email: {
         type: String,
         required: 'Email adress is required',
@@ -68,6 +69,8 @@ userSchema.pre('save', function (next) {
         } else {
             if (userList.length === 0) {
                 this.userid = 1;
+                next();
+            } else if (this.userid) {
                 next();
             } else {
                 this.userid = userList[0].userid + 1;
