@@ -39,7 +39,7 @@ const links = {};
  * @apiSuccessExample 201 Created
  *     HTTP/1.1 201 Created
  *     Content-Type: application/json
- *     Location: https://comem-webserv-2018-2019-e.herokuapp.com/users/1
+ *     Location: https://comem-webserv-2018-2019-e.herokuapp.com/trips/1
  *
  *     {
  *       "_id": "5bd9e744e80f0065a0c7fcd6",
@@ -76,7 +76,9 @@ router.post('/', authenticate, utils.requireJson, function (req, res, next) {
  * @apiVersion 1.0.0
  * @apiDescription Retrieves a list of trips sorted by tripid (in ascending order).
  *
+ * @apiUse TripURLQueryParameters
  * @apiUse TripInResponseBody
+ * @apiUse TripResponseHeader
  *
  * @apiExample Example
  *     GET /trips HTTP/1.1
@@ -143,7 +145,6 @@ router.get('/', function (req, res, next) {
         let query = Trip.find().sort('tripid');
 
         // Filter trips by tripCreator (user) 
-        // tester: http://localhost:3000/trips?tripCreator=2
         if (req.query.tripCreator) {
             query = query.where('tripCreator').equals(req.query.tripCreator);
         }
@@ -251,8 +252,51 @@ router.get('/:tripid', function (req, res, next) {
 });
 
 
-/* 
- * GET: list one trip aggreggate
+/**
+ * @api {get} /trips/agg/:tripid Retrieve aggregata datas of a trip
+ * @apiName RetrieveAggTrip
+ * @apiGroup Trip
+ * @apiVersion 1.0.0
+ * @apiDescription Retrieves aggregata dateas of a trip.
+ *
+ * @apiUse TripIdInUrlPath
+ * @apiUse PlaceInResponseBody
+ * @apiUse TripNotFoundError
+ *
+ * @apiExample Example
+ *     GET /trips/1 HTTP/1.1
+ *
+ * @apiSuccessExample 200 OK
+ *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
+ *     Location: https://comem-webserv-2018-2019-e.herokuapp.com/trips/agg/1
+ *
+ *     [
+ *       {
+ *         "_id": "5bdb19ad8cee2d018c55e6fa",
+ *         "placeid": 1,
+ *         "placeName": "place_1",
+ *         "placeDescription": "This is the description of the place_1.",
+ *         "placePicture": "https://muggli.one/heig/webs/missing-img.png",
+ *         "placeCreationDate": "2018-11-01T15:20:13.951Z",
+ *         "placeLastModDate": "2018-11-01T15:20:13.951Z",
+ *         "placeLatitude": 0,
+ *         "placeLongitude": 0,
+ *         "placeCorrTrip": 1
+ *       },
+ *       {
+ *         "_id": "5bdb1a808cee2d018c55e6fc",
+ *         "placeid": 2,
+ *         "placeName": "place_2",
+ *         "placeDescription": "This is the description of the place_2.",
+ *         "placePicture": "https://muggli.one/heig/webs/missing-img.png",
+ *         "placeCreationDate": "2018-11-01T15:23:44.008Z",
+ *         "placeLastModDate": "2018-11-01T15:23:44.008Z",
+ *         "placeLatitude": 0,
+ *         "placeLongitude": 0,
+ *         "placeCorrTrip": 1
+ *       }
+ *     ]
  */
 router.get('/agg/:tripid', function (req, res, next) {
 
@@ -263,11 +307,45 @@ router.get('/agg/:tripid', function (req, res, next) {
             return next(err);
         }
         res.send(place);
-    })
+    });
 });
 
-/* 
- * PATCH: Modify an existing trip 
+
+/**
+ * @api {patch} /trips/:tripid Partially update a trip
+ * @apiName PartiallyUpdateTrip
+ * @apiGroup Trip
+ * @apiVersion 1.0.0
+ * @apiDescription Partially updates a trip's data (only the properties found in the request body will be updated).
+ * All properties are optional.
+ *
+ * @apiUse TripIdInUrlPath
+ * @apiUse TripInRequestBody
+ * @apiUse TripInResponseBody
+ * @apiUse TripNotFoundError
+ * @apiUse TripValidationError
+ *
+ * @apiExample Example
+ *     PATCH /trips/1 HTTP/1.1
+ *     Content-Type: application/json
+ *
+ *     {
+ *       "tripName": "trip_1_new"
+ *     }
+ *
+ * @apiSuccessExample 200 OK
+ *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
+ *
+ *     {
+ *       "_id": "5bd9e744e80f0065a0c7fcd6",
+ *       "tripid": 1,
+ *       "tripName": "trip_1_new",
+ *       "tripDescription": "This is the description of the trip_1.",
+ *       "tripCreationDate": "2018-10-31T17:32:52.449Z",
+ *       "tripLastModDate": "2018-11-31T20:15:10.613Z",
+ *       "tripCreator": 1
+ *     }
  */
 router.patch('/:tripid', utils.requireJson, loadTripFromParamsMiddleware, function (req, res, next) {
 
@@ -277,6 +355,9 @@ router.patch('/:tripid', utils.requireJson, loadTripFromParamsMiddleware, functi
     }
     if (req.body.tripDescription !== undefined) {
         req.trip.tripDescription = req.body.tripDescription;
+    }
+    if (req.body.tripCreator !== undefined) {
+        req.trip.tripCreator = req.body.tripCreator;
     }
 
     req.trip.set("tripLastModDate", Date.now());
@@ -301,8 +382,86 @@ router.patch('/:tripid', utils.requireJson, loadTripFromParamsMiddleware, functi
 });
 
 
-/* 
- * DELETE: Delete an existing trip 
+/**
+ * @api {put} /trips/:tripid Update a trip
+ * @apiName UpdateTrip
+ * @apiGroup Trip
+ * @apiVersion 1.0.0
+ * @apiDescription Replaces all the trip's data (the request body must represent a full, valid trip).
+ *
+ * @apiUse TripIdInUrlPath
+ * @apiUse TripInRequestBody
+ * @apiUse TripInResponseBody
+ * @apiUse TripNotFoundError
+ * @apiUse TripValidationError
+ *
+ * @apiExample Example
+ *     PUT /trips/1 HTTP/1.1
+ *     Content-Type: application/json
+ *
+ *     {
+ *       "tripName": "trip_1_new",
+ *       "tripDescription": "This is the new description of the trip_1.",
+ *       "tripCreator": 2
+ *     }
+ *
+ * @apiSuccessExample 200 OK
+ *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
+ *
+ *     {
+ *       "_id": "5bd9e744e80f0065a0c7fcd6",
+ *       "tripid": 1,
+ *       "tripName": "trip_1_new",
+ *       "tripDescription": "This is the new description of the trip_1.",
+ *       "tripCreationDate": "2018-10-31T17:32:52.449Z",
+ *       "tripLastModDate": "2018-11-31T20:15:10.613Z",
+ *       "tripCreator": 2
+ *     }
+ */
+router.put('/:tripid', utils.requireJson, loadTripFromParamsMiddleware, function (req, res, next) {
+
+    // Update all properties (regardless of whether they are in the request body or not)
+    req.trip.tripName = req.body.tripName;
+    req.trip.tripDescription = req.body.tripDescription;
+    req.trip.tripCreator = req.body.tripCreator;
+    
+    req.trip.set("tripLastModDate", Date.now());
+
+    req.trip.save(function (err, savedTrip) {
+        if (err) {
+            return next(err);
+        }
+
+        req.trip.set("tripLastModDate", Date.now());
+
+        req.trip.save(function (err, savedTrip) {
+            if (err) {
+                return next(err);
+            }
+
+            debug(`Updated Trip "${savedTrip.tripName}"`);
+            res.send(savedTrip);
+        });
+    });
+});
+
+
+/**
+ * @api {delete} /trips/:tripid Delete a trip
+ * @apiName DeleteTrip
+ * @apiGroup Trip
+ * @apiVersion 1.0.0
+ * @apiDescription Permanently deletes a trip.
+ *
+ * @apiUse TripIdInUrlPath
+ * @apiUse TripNotFoundError
+ *
+ * @apiExample Example
+ *     DELETE /trips/1 HTTP/1.1
+ *
+ * @apiSuccessExample 204 No Content
+ *     HTTP/1.1 204 No Content
  */
 router.delete('/:tripid', loadTripFromParamsMiddleware, function (req, res, next) {
 
@@ -382,6 +541,13 @@ function authenticate(req, res, next) {
  */
 
 /**
+ * @apiDefine TripURLQueryParameters
+ * @apiParam (URL query parameters) {Number} [tripCreator] Select only trips by a specific tripCreator (this parameter can be given multiple times)
+ * @apiParam (URL query parameters) {Number {1..}} [page] The page to retrieve (defaults to 1)
+ * @apiParam (URL query parameters) {Number {1..10}} [pageSize] The number of elements to retrieve in one page (defaults to 10)
+ */
+
+/**
  * @apiDefine TripInRequestBody
  * @apiParam (Request body) {String{3..}} tripName The name of the trip
  * @apiParam (Request body) {String} [tripDescription] The description of the trip
@@ -394,9 +560,14 @@ function authenticate(req, res, next) {
  * @apiSuccess (Response body) {Number} tripid The unique identifier of the trip
  * @apiSuccess (Response body) {String} tripName The name of the trip
  * @apiSuccess (Response body) {String} tripDescription The description of the trip (if any)
- * @apiSuccess (Response body) {Date} tripCreationDate The date at which the trip was created with default value Date.now of the trip (if any)
+ * @apiSuccess (Response body) {Date} tripCreationDate The date at which the trip was created with default value Date.now 
  * @apiSuccess (Response body) {Date} tripLastModDate The date at which the trip was modified with default value Date.now
  * @apiSuccess (Response body) {Number} tripCreator The userid of the creator of the trip
+ */
+
+/**
+ * @apiDefine TripResponseHeader
+ * @apiParam (Response headers) {String} Link Links to the first, previous, next and last pages of the collection (if applicable) => Custom headers (solution 2)
  */
 
 /**
@@ -414,7 +585,7 @@ function authenticate(req, res, next) {
 /**
  * @apiDefine TripValidationError
  *
- * @apiError (Error 4xx) {Object} 401/Unauthorized tripCreator (user) is not authorized to create this trip.
+ * @apiError (Error 4xx) {Object} 401/Unauthorized User is not authorized to create this trip.
  * @apiError (Error 5xx) {Object} 500/InternalServerError Some of the trip's properties are invalid
  *
  * @apiErrorExample {json} 401 Unauthorized
