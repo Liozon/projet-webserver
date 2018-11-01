@@ -22,10 +22,12 @@ Cette API regroupe les tables suivantes :
     - placeid
     - placeName
     - placeDescription
-    - placeGeolocalisation
+    - (placeGeolocalisation)
     - placePicture
     - placeCreationDate
     - placeLastModDate
+    - placeLatitude
+    - placeLongitude
     - placeCorrTrip
     
     
