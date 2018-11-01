@@ -1,7 +1,7 @@
 define({
   "name": "TravelLog",
   "version": "1.0.0",
-  "description": "Take pictures of places along your trip",
+  "description": "Take pictures of places along your trip (REST API developed with Express)",
   "title": "TravelLog",
   "url": "https://comem-webserv-2018-2019-e.herokuapp.com",
   "header": {
@@ -12,7 +12,7 @@ define({
   "apidoc": "0.3.0",
   "generator": {
     "name": "apidoc",
-    "time": "2018-10-31T18:15:07.135Z",
+    "time": "2018-11-01T16:27:52.837Z",
     "url": "http://apidocjs.com",
     "version": "0.17.6"
   }

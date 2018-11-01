@@ -27,7 +27,7 @@ router.post('/', utils.requireJson, function (req, res, next) {
         debug(`Created user "${savedUser.email}"`);
         // Send the saved document in the response
         res.status(201)
-            //.set('Location',`${config.baseUrl}/api/people/${savedUser._id}`)
+            //.set('Location',`${config.baseUrl}/users/${savedUser._id}`)
             .send(savedUser);
     });
 });
@@ -424,7 +424,6 @@ router.delete('/:userid', loadUserFromParamsMiddleware, function (req, res, next
     });
 });
 
-
 /**
  * Middleware that loads the user corresponding to the ID in the URL path.
  * Responds with 404 Not Found if the ID is not valid or the user doesn't exist.
@@ -446,6 +445,7 @@ function loadUserFromParamsMiddleware(req, res, next) {
         next();
     });
 }
+
 /**
  * Responds with 404 Not Found and a message indicating that the user with the specified ID was not found.
  */

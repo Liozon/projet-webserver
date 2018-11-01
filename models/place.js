@@ -20,6 +20,7 @@ const placeSchema = new Schema({
     },
     placeName: {
         type: String,
+        minlength: 3,
         required: 'Name of the place is required'
     },
     placeDescription: {

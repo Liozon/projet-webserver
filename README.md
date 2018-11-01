@@ -62,15 +62,16 @@ Routes :
     - /user/userid
     - /trip/tripid
     - /place/placeid
+    
+- PUT (Modify an existing resource complet)
+    - /user/userid
+    - /trip/tripid
+    - /place/placeid
 
 
 -----------------------------------------------------------------
 
 ToDo:
-
-- Aggregated data ((Julien))
-
-- Documentation ((Steffi))
 
 - REST: HTTP methods, headers and status codes, consistent URL hierarchy and/or naming structure ((Céline))
 
@@ -84,6 +85,8 @@ QUESTIONS :
 - models/place.js:geolocalisation automatique?
 
 - models/place.js: How to use correct timezone for date.now in the Schema?
+
+- Tout fonctionne sans démarrer les programmes mongo.exe et mongod.exe. Est-ce que c'est correct ?
 
 - Heroku: 'https://comem-webserv-2018-2019-e.herokuapp.com' ne fonctionne pas comme 'http://localhost:3000/'! Update? 
   
