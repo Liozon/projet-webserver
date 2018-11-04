@@ -181,9 +181,9 @@ router.get('/', function (req, res, next) {
                     }
                 },
                 {
-                    $group: { // Group the documents by director ID
+                    $group: { // Group the documents by the placeCorrTrip ID
                         _id: '$placeCorrTrip',
-                        placesCount: { // Count the number of movies for that ID
+                        placesCount: { // Count the number of places for that ID
                             $sum: 1
                         }
                     }
@@ -194,9 +194,9 @@ router.get('/', function (req, res, next) {
                 }
                 const tripsJson = trips.map(trip => trip.toJSON());
                 results.forEach(function (result) {
-                    // Get the director ID (that was used to $group)...
+                    // Get the trip ID (that was used to $group)...
                     const resultId = result._id.toString();
-                    // Find the corresponding person...
+                    // Find the corresponding place...
                     const correspondingTrip = tripsJson.find(trip => trip.tripid == resultId);
                     // And attach the new property
                     correspondingTrip.placesCount = result.placesCount;
