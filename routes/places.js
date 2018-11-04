@@ -29,7 +29,11 @@ const secretKey = process.env.JWT_KEY || 'dfjsf';
  *     {
  *       "placeName": "place_1",
  *       "placeDescription": "This is the description of the place_1.",
- *       "placeCorrTrip": 1
+ *       "placeCorrTrip": 1,
+ *        "location": {
+ *           "type": "Point",
+ *           "coordinates": [6.63, 46.52]
+ *       }
  *     }
  *
  * @apiSuccessExample 201 Created
@@ -45,12 +49,11 @@ const secretKey = process.env.JWT_KEY || 'dfjsf';
  *       "placePicture": "https://muggli.one/heig/webs/missing-img.png",
  *       "placeCreationDate": "2018-11-01T15:20:13.951Z",
  *       "placeLastModDate": "2018-11-01T15:20:13.951Z",
- *       "placeLatitude": 0,
- *       "placeLongitude": 0,
+ *       "location": {"type": "Point", "coordinates" : [-122.5,                 37.7]}, 
  *       "placeCorrTrip": 1    
  *     }
  */
-router.post('/', authenticate, utils.requireJson, function (req, res, next) {
+router.post('/', utils.authenticate, utils.requireJson, function (req, res, next) {
     // Create a new document from the JSON in the request body
     const newPlace = new Place(req.body);
     // Save that document
@@ -85,7 +88,7 @@ router.post('/', authenticate, utils.requireJson, function (req, res, next) {
  * @apiSuccessExample 200 OK
  *     HTTP/1.1 200 OK
  *     Content-Type: application/json
- *     Location: https://comem-webserv-2018-2019-e.herokuapp.com/places/page=1&pageSize=10
+ *     Location: https://comem-webserv-2018-2019-e.herokuapp.com/places?page=1&pageSize=10
  *
  *     [
  *       {
@@ -221,16 +224,8 @@ router.get('/', function (req, res, next) {
  *       "placeCorrTrip": 1 
  *     }
  */
-router.get('/:placeid', function (req, res, next) {
-    const placeid = req.params.placeid;
-    Place.findOne({
-        placeid: placeid
-    }).exec(function (err, place) {
-        if (err) {
-            return next(err);
-        }
-        res.send(place);
-    });
+router.get('/:placeid', loadPlaceFromParamsMiddleware, function (req, res, next) {
+    res.send(req.place);
 });
 
 
@@ -292,8 +287,6 @@ router.patch('/:placeid', utils.requireJson, loadPlaceFromParamsMiddleware, func
         if (err) {
             return next(err);
         }
-
-
         debug(`Updated Place "${savedPlace.placeName}"`);
         res.send(savedPlace);
     });
@@ -419,35 +412,6 @@ function loadPlaceFromParamsMiddleware(req, res, next) {
 function placeNotFound(res, placeid) {
     return res.status(404).type('text').send(`No place found with ID ${placeid}`);
 }
-
-/**
- *  JWT authentication middleware
- */
-function authenticate(req, res, next) {
-    // Ensure the header is present.
-    const authorization = req.get('Authorization');
-    if (!authorization) {
-        return res.status(401).send('Authorization header is missing');
-    }
-    // Check that the header has the correct format.
-    const match = authorization.match(/^Bearer (.+)$/);
-    if (!match) {
-        return res.status(401).send('Authorization header is not a bearer token');
-    }
-    // Extract and verify the JWT.
-    const token = match[1];
-    jwt.verify(token, secretKey, function (err, payload) {
-        if (err) {
-            return res.status(401).send('Your token is invalid or has expired');
-        } else {
-            req.currentUserid = payload.sub;
-            next(); // Pass the ID of the authenticated user to the next middleware.
-        }
-    })
-}
-
-
-
 
 /**
  * @apiDefine PlaceIdInUrlPath
