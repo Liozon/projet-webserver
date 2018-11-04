@@ -179,7 +179,7 @@ router.get('/', function (req, res, next) {
                             $in: tripIds
                         }
                     }
-      },
+                },
                 {
                     $group: { // Group the documents by director ID
                         _id: '$placeCorrTrip',
@@ -187,8 +187,8 @@ router.get('/', function (req, res, next) {
                             $sum: 1
                         }
                     }
-      }
-    ], function (err, results) {
+                }
+            ], function (err, results) {
                 if (err) {
                     return next(err);
                 }
@@ -425,7 +425,7 @@ router.put('/:tripid', utils.requireJson, loadTripFromParamsMiddleware, function
     req.trip.tripName = req.body.tripName;
     req.trip.tripDescription = req.body.tripDescription;
     req.trip.tripCreator = req.body.tripCreator;
-    
+
     req.trip.set("tripLastModDate", Date.now());
 
     req.trip.save(function (err, savedTrip) {

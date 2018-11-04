@@ -65,6 +65,7 @@ Routes :
     - /trip/tripid
     - /place/placeid
     
+    
 - PUT (Modify an existing resource complet)
     - /user/userid
     - /trip/tripid
@@ -90,6 +91,4 @@ QUESTIONS :
 
 - Tout fonctionne sans démarrer les programmes mongo.exe et mongod.exe. Est-ce que c'est correct ?
 
-- Heroku: 'https://comem-webserv-2018-2019-e.herokuapp.com' ne fonctionne pas comme 'http://localhost:3000/'! Update? 
-  
-
+- Heroku: 'https://comem-webserv-2018-2019-e.herokuapp.com' ne fonctionne pas comme 'http://localhost:3000/'! Update?

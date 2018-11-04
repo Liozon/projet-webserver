@@ -148,9 +148,9 @@ router.post('/', authenticate, utils.requireJson, function (req, res, next) {
  */
 router.get('/', function (req, res, next) {
     Place.find().count(function (err, total) {
-        
+
         if (err) {
-            return next (err);
+            return next(err);
         }
 
         let query = Place.find().sort('placeid');
@@ -159,7 +159,7 @@ router.get('/', function (req, res, next) {
         if (req.query.placeCorrTrip) {
             query = query.where('placeCorrTrip').equals(req.query.placeCorrTrip);
         }
-        
+
         // Parse the "page" param (default to 1 if invalid)
         let page = parseInt(req.query.page, 10);
         if (isNaN(page) || page < 1) {
@@ -172,7 +172,7 @@ router.get('/', function (req, res, next) {
         }
         // Apply skip and limit to select the correct page of elements
         query = query.skip((page - 1) * pageSize).limit(pageSize);
-        
+
         res.set('Pagination-Page', page);
         res.set('Pagination-PageSize', pageSize);
         res.set('Pagination-Total', total);
