@@ -174,14 +174,14 @@ router.get('/', function (req, res, next) {
             const tripIds = trips.map(trip => trip.tripid);
             Place.aggregate([
                 {
-                    $match: { // Select movies directed by the people we are interested in
+                    $match: { // Select places that corresponds to a trip
                         placeCorrTrip: {
                             $in: tripIds
                         }
                     }
                 },
                 {
-                    $group: { // Group the documents by the placeCorrTrip ID
+                    $group: { // Group the elements by the placeCorrTrip ID
                         _id: '$placeCorrTrip',
                         placesCount: { // Count the number of places for that ID
                             $sum: 1
