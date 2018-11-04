@@ -88,7 +88,7 @@ QUESTIONS :
 
 - models/place.js: How to use correct timezone for date.now in the Schema?
 
-- Tout fonctionne sans démarrer les programmes mongo.exe et mongod.exe. Est-ce que c'est correct ?
+- Tout fonctionne sans démarrer les programmes mongo.exe et mongod.exe. Est-ce que c'est correct ? on peut pas se déconnecter à la base de données sans mongo.exe, le programme devait tourner en arrière plan (Steffi)
 
 - Heroku: 'https://comem-webserv-2018-2019-e.herokuapp.com' ne fonctionne pas comme 'http://localhost:3000/'! Update? 
   

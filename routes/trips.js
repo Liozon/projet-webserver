@@ -51,7 +51,7 @@ const links = {};
  *       "tripCreator": 1
  *     }
  */
-router.post('/', authenticate, utils.requireJson, function (req, res, next) {
+router.post('/', utils.authenticate, utils.requireJson, function (req, res, next) {
     // Create a new document from the JSON in the request body
     const newTrip = new Trip(req.body);
     // Save that document
@@ -86,7 +86,7 @@ router.post('/', authenticate, utils.requireJson, function (req, res, next) {
  * @apiSuccessExample 200 OK
  *     HTTP/1.1 200 OK
  *     Content-Type: application/json
- *     Location: https://comem-webserv-2018-2019-e.herokuapp.com/trips/page=1&pageSize=10
+ *     Location: https://comem-webserv-2018-2019-e.herokuapp.com/trips?page=1&pageSize=10
  *
  *     [
  *       {
@@ -239,25 +239,17 @@ router.get('/', function (req, res, next) {
  *       "tripCreator": 1
  *     }
  */
-router.get('/:tripid', function (req, res, next) {
-    const tripid = req.params.tripid;
-    Trip.findOne({
-        tripid: tripid
-    }).exec(function (err, trip) {
-        if (err) {
-            return next(err);
-        }
-        res.send(trip);
-    });
+router.get('/:tripid', loadTripFromParamsMiddleware, function (req, res, next) {
+    res.send(req.trip);
 });
 
 
 /**
- * @api {get} /trips/agg/:tripid Retrieve aggregata datas of a trip
+ * @api {get} /trips/:tripid/places Retrieve all places of a trip
  * @apiName RetrieveAggTrip
  * @apiGroup Trip
  * @apiVersion 1.0.0
- * @apiDescription Retrieves aggregata dateas of a trip.
+ * @apiDescription Retrieve all places of a trip
  *
  * @apiUse TripIdInUrlPath
  * @apiUse PlaceInResponseBody
@@ -269,7 +261,7 @@ router.get('/:tripid', function (req, res, next) {
  * @apiSuccessExample 200 OK
  *     HTTP/1.1 200 OK
  *     Content-Type: application/json
- *     Location: https://comem-webserv-2018-2019-e.herokuapp.com/trips/agg/1
+ *     Location: https://comem-webserv-2018-2019-e.herokuapp.com/trips/1/places
  *
  *     [
  *       {
@@ -298,15 +290,15 @@ router.get('/:tripid', function (req, res, next) {
  *       }
  *     ]
  */
-router.get('/agg/:tripid', function (req, res, next) {
+router.get('/:tripid/places', function (req, res, next) {
 
     Place.find({
         placeCorrTrip: req.params.tripid
-    }).populate().exec(function (err, place) {
+    }).populate().exec(function (err, places) {
         if (err) {
             return next(err);
         }
-        res.send(place);
+        res.send(places);
     });
 });
 
@@ -505,34 +497,6 @@ function loadTripFromParamsMiddleware(req, res, next) {
 function tripNotFound(res, tripid) {
     return res.status(404).type('text').send(`No trip found with ID ${tripid}`);
 }
-
-/**
- *  JWT authentication middleware
- */
-function authenticate(req, res, next) {
-    // Ensure the header is present.
-    const authorization = req.get('Authorization');
-    if (!authorization) {
-        return res.status(401).send('Authorization header is missing');
-    }
-    // Check that the header has the correct format.
-    const match = authorization.match(/^Bearer (.+)$/);
-    if (!match) {
-        return res.status(401).send('Authorization header is not a bearer token');
-    }
-    // Extract and verify the JWT.
-    const token = match[1];
-    jwt.verify(token, secretKey, function (err, payload) {
-        if (err) {
-            return res.status(401).send('Your token is invalid or has expired');
-        } else {
-            req.currentUserid = payload.sub;
-            next(); // Pass the ID of the authenticated user to the next middleware.
-        }
-    });
-}
-
-
 
 
 /**
