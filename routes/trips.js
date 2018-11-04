@@ -174,29 +174,29 @@ router.get('/', function (req, res, next) {
             const tripIds = trips.map(trip => trip.tripid);
             Place.aggregate([
                 {
-                    $match: { // Select movies directed by the people we are interested in
+                    $match: { // Select places that corresponds to a trip
                         placeCorrTrip: {
                             $in: tripIds
                         }
                     }
-      },
+                },
                 {
-                    $group: { // Group the documents by director ID
+                    $group: { // Group the elements by the placeCorrTrip ID
                         _id: '$placeCorrTrip',
-                        placesCount: { // Count the number of movies for that ID
+                        placesCount: { // Count the number of places for that ID
                             $sum: 1
                         }
                     }
-      }
-    ], function (err, results) {
+                }
+            ], function (err, results) {
                 if (err) {
                     return next(err);
                 }
                 const tripsJson = trips.map(trip => trip.toJSON());
                 results.forEach(function (result) {
-                    // Get the director ID (that was used to $group)...
+                    // Get the trip ID (that was used to $group)...
                     const resultId = result._id.toString();
-                    // Find the corresponding person...
+                    // Find the corresponding place...
                     const correspondingTrip = tripsJson.find(trip => trip.tripid == resultId);
                     // And attach the new property
                     correspondingTrip.placesCount = result.placesCount;
@@ -425,7 +425,7 @@ router.put('/:tripid', utils.requireJson, loadTripFromParamsMiddleware, function
     req.trip.tripName = req.body.tripName;
     req.trip.tripDescription = req.body.tripDescription;
     req.trip.tripCreator = req.body.tripCreator;
-    
+
     req.trip.set("tripLastModDate", Date.now());
 
     req.trip.save(function (err, savedTrip) {
