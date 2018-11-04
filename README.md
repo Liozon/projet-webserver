@@ -25,18 +25,21 @@ This API groups the following tables:
 | tripLastModDate       |
 | tripCreator           |
 
-    
-- place
-    - placeid
-    - placeName
-    - placeDescription
-    - (placeGeolocalisation)
-    - placePicture
-    - placeCreationDate
-    - placeLastModDate
-    - placeLatitude
-    - placeLongitude
-    - placeCorrTrip
+
+### table : place
+
+| Attributes            |
+| -----------           |
+| placeid               |
+| placeName             |
+| placeDescription      |
+| (placeGeolocalisation)|
+| placePicture          |
+| placeCreationDate     |
+| placeLastModDate      |
+| placeLatitude         |
+| placeLongitude        |
+| placeCorrTrip         |
     
     
 -----------------------------------------------------------------
