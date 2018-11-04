@@ -13,19 +13,18 @@ This API groups the following tables:
 | password              |
 | registrationDate      |
 
-- user
-    - userid
-    - email
-    - password
-    - registrationDate
-    
-- trip
-    - tripid
-    - tripName
-    - tripDescription
-    - tripCreationDate
-    - tripLastModDate
-    - tripCreator
+
+### table : trip
+
+| Attributes            |
+| -----------           |
+| tripid                |
+| tripName              |
+| tripDescription       |
+| tripCreationDate      |
+| tripLastModDate       |
+| tripCreator           |
+
     
 - place
     - placeid
