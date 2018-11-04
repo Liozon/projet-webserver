@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Take pictures of places along your trip (REST API developed with Express)",
   "title": "TravelLog",
-  "url" : "https://comem-webserv-2018-2019-e.herokuapp.com",
+  "url": "https://comem-webserv-2018-2019-e.herokuapp.com",
   "header": {
-      "filename": "APIDOC.md"
+    "filename": "APIDOC.md"
   }
 }

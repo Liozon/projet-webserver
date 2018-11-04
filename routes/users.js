@@ -69,8 +69,8 @@ router.post('/', utils.requireJson, function (req, res, next) {
  */
 router.post('/signup', (req, res, next) => {
     User.find({
-            email: req.body.email
-        })
+        email: req.body.email
+    })
         .exec()
         .then(user => {
             if (user.length >= 1) {
@@ -90,11 +90,11 @@ router.post('/signup', (req, res, next) => {
                             password: hash
                         });
                         user.save().then(result => {
-                                console.log(result);
-                                res.status(201).json({
-                                    message: 'User created'
-                                });
-                            })
+                            console.log(result);
+                            res.status(201).json({
+                                message: 'User created'
+                            });
+                        })
                             .catch(err => {
                                 console.log(err);
                                 res.status(500).json({
@@ -139,8 +139,8 @@ router.post('/signup', (req, res, next) => {
  */
 router.post("/login", (req, res, next) => {
     User.find({
-            email: req.body.email
-        })
+        email: req.body.email
+    })
         .exec()
         .then(user => {
             if (user.length < 1) {
@@ -156,9 +156,9 @@ router.post("/login", (req, res, next) => {
                 }
                 if (result) {
                     const token = jwt.sign({
-                            email: user[0].email,
-                            userid: user[0].userid
-                        },
+                        email: user[0].email,
+                        userid: user[0].userid
+                    },
                         secretKey, {
                             expiresIn: "168h"
                         }
@@ -323,7 +323,7 @@ router.patch('/:userid', utils.requireJson, loadUserFromParamsMiddleware, functi
     }
     if (req.body.password !== undefined) {
         req.user.password = req.body.password;
-        
+
         // Password Encryption
         let hash = bcrypt.hashSync(req.user.password, 10);
         req.user.password = hash;
@@ -381,7 +381,7 @@ router.put('/:userid', utils.requireJson, loadUserFromParamsMiddleware, function
     // Update all properties (regardless of whether they are in the request body or not)
     req.user.email = req.body.email;
     req.user.password = req.body.password;
-    
+
     // Password Encryption
     let hash = bcrypt.hashSync(req.user.password, 10);
     req.user.password = hash;
@@ -452,7 +452,6 @@ function loadUserFromParamsMiddleware(req, res, next) {
 function userNotFound(res, userid) {
     return res.status(404).type('text').send(`No user found with ID ${userid}`);
 }
-
 
 /**
  * @apiDefine UserIdInUrlPath
