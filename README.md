@@ -1,8 +1,17 @@
 # COMEM+ Web Development Express REST Projet Web Server
 
-Dans le cadre du cours WebServer de troisième et denière année de Bachelor, nous avons créé une API. Cette API est un journal de voyage.
+As part of the WebServer course from third and last year of Bachelor, we have created an API. This API is a travel journal.
 
-Cette API regroupe les tables suivantes :
+This API groups the following tables:
+
+### table : user
+
+| Attributes            |
+| -----------           |
+| userid                |
+| email                 |
+| password              |
+| registrationDate      |
 
 - user
     - userid
@@ -64,7 +73,7 @@ Routes :
     - /user/userid
     - /trip/tripid
     - /place/placeid
-    
+
     
 - PUT (Modify an existing resource complet)
     - /user/userid
