@@ -1,34 +1,46 @@
 # COMEM+ Web Development Express REST Projet Web Server
 
-Dans le cadre du cours WebServer de troisième et denière année de Bachelor, nous avons créé une API. Cette API est un journal de voyage.
+As part of the WebServer course from third and last year of Bachelor, we have created an API. This API is a travel journal.
 
-Cette API regroupe les tables suivantes :
+This API groups the following tables:
 
-- user
-    - userid
-    - email
-    - password
-    - registrationDate
-    
-- trip
-    - tripid
-    - tripName
-    - tripDescription
-    - tripCreationDate
-    - tripLastModDate
-    - tripCreator
-    
-- place
-    - placeid
-    - placeName
-    - placeDescription
-    - (placeGeolocalisation)
-    - placePicture
-    - placeCreationDate
-    - placeLastModDate
-    - placeLatitude
-    - placeLongitude
-    - placeCorrTrip
+### table : user
+
+| Attributes            |
+| -----------           |
+| userid                |
+| email                 |
+| password              |
+| registrationDate      |
+
+
+### table : trip
+
+| Attributes            |
+| -----------           |
+| tripid                |
+| tripName              |
+| tripDescription       |
+| tripCreationDate      |
+| tripLastModDate       |
+| tripCreator           |
+
+
+### table : place
+
+| Attributes            |
+| -----------           |
+| placeid               |
+| placeName             |
+| placeDescription      |
+| (placeGeolocalisation)|
+| placePicture          |
+| placeCreationDate     |
+| placeLastModDate      |
+| placeLatitude         |
+| placeLongitude        |
+| placeCorrTrip         |
+
     
     
 -----------------------------------------------------------------
@@ -64,6 +76,7 @@ Routes :
     - /user/userid
     - /trip/tripid
     - /place/placeid
+
     
 - PUT (Modify an existing resource complet)
     - /user/userid
@@ -88,8 +101,6 @@ QUESTIONS :
 
 - models/place.js: How to use correct timezone for date.now in the Schema?
 
-- Tout fonctionne sans démarrer les programmes mongo.exe et mongod.exe. Est-ce que c'est correct ?
+- Tout fonctionne sans démarrer les programmes mongo.exe et mongod.exe. Est-ce que c'est correct ? on peut pas se déconnecter à la base de données sans mongo.exe, le programme devait tourner en arrière plan (Steffi)
 
-- Heroku: 'https://comem-webserv-2018-2019-e.herokuapp.com' ne fonctionne pas comme 'http://localhost:3000/'! Update? 
-  
-
+- Heroku: 'https://comem-webserv-2018-2019-e.herokuapp.com' ne fonctionne pas comme 'http://localhost:3000/'! Update?

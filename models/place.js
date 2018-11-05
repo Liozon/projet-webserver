@@ -42,15 +42,18 @@ const placeSchema = new Schema({
         type: Date,
         default: Date.now
     },
-    placeLatitude: {
-        type: Number,
-        default: 0.000000,
-        required: 'The latitude is required'
-    },
-    placeLongitude: {
-        type: Number,
-        default: 0.000000,
-        required: 'The longitude is required'
+    location: {
+        type: {
+            type: String, // Don't do `{ location: { type: String } }`
+            enum: ['Point'], // 'location.type' must be 'Point'
+            required: true,
+            default: 'Point'
+        },
+        coordinates: {
+            type: [Number],
+            required: true,
+            default:  [-122.5, 37.7]
+        } 
     },
     placeCorrTrip: {
         type: Number,
