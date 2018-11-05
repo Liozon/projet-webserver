@@ -40,6 +40,7 @@ This API groups the following tables:
 | placeLatitude         |
 | placeLongitude        |
 | placeCorrTrip         |
+
     
     
 -----------------------------------------------------------------
