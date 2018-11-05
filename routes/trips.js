@@ -42,12 +42,12 @@ const links = {};
  *     Location: https://comem-webserv-2018-2019-e.herokuapp.com/trips/1
  *
  *     {
- *       "_id": "5bd9e744e80f0065a0c7fcd6",
+ *       "_id": "5be034727a0f46001685a33e",
  *       "tripid": 1,
  *       "tripName": "trip_1",
  *       "tripDescription": "This is the description of the trip_1.",
- *       "tripCreationDate": "2018-10-31T17:32:52.449Z",
- *       "tripLastModDate": "2018-10-31T17:32:52.449Z",
+ *       "tripCreationDate": "2018-11-05T12:15:46.359Z",
+ *       "tripLastModDate": "2018-11-05T12:15:46.359Z",
  *       "tripCreator": 1
  *     }
  */
@@ -99,21 +99,21 @@ router.post('/', utils.authenticate, utils.requireJson, function (req, res, next
  *         "tripCreator": 1
  *       },
  *       {
- *         "_id": "5bd6bd0637fec753c40a89bb",
+ *         "_id": "5be034a67a0f46001685a33f",
  *         "tripid": 2,
  *         "tripName": "trip_2",
  *         "tripDescription": "This is the description of the trip_2.",
- *         "tripCreationDate": "2018-10-29T07:55:50.995Z",
- *         "tripLastModDate": "2018-10-29T07:55:50.995Z",
+ *         "tripCreationDate": "2018-11-05T12:16:38.100Z",
+ *         "tripLastModDate": "2018-11-05T12:16:38.100Z",
  *         "tripCreator": 1
  *       },
  *       {
- *         "_id": "5bd6cbe57aa3be18a856dfbf",
+ *         "_id": "5be034c97a0f46001685a340",
  *         "tripid": 3,
  *         "tripName": "trip_3",
  *         "tripDescription": "This is the description of the trip_3.",
- *         "tripCreationDate": "2018-10-29T08:59:17.167Z",
- *         "tripLastModDate": "2018-10-29T08:59:17.167Z",
+ *         "tripCreationDate": "2018-11-05T12:17:13.022Z",
+ *         "tripLastModDate": "2018-11-05T12:17:13.022Z",
  *         "tripCreator": 2
  *       }
  *     ]
@@ -125,12 +125,12 @@ router.post('/', utils.authenticate, utils.requireJson, function (req, res, next
  *
  *     [
  *       {
- *         "_id": "5bd6cbe57aa3be18a856dfbf",
+ *         "_id": "5be034c97a0f46001685a340",
  *         "tripid": 3,
  *         "tripName": "trip_3",
  *         "tripDescription": "This is the description of the trip_3.",
- *         "tripCreationDate": "2018-10-29T08:59:17.167Z",
- *         "tripLastModDate": "2018-10-29T08:59:17.167Z",
+ *         "tripCreationDate": "2018-11-05T12:17:13.022Z",
+ *         "tripLastModDate": "2018-11-05T12:17:13.022Z",
  *         "tripCreator": 2
  *       }
  *     ]
@@ -230,12 +230,12 @@ router.get('/', function (req, res, next) {
  *     Location: https://comem-webserv-2018-2019-e.herokuapp.com/trips/1
  *
  *     {
- *       "_id": "5bd9e744e80f0065a0c7fcd6",
+ *       "_id": "5be034727a0f46001685a33e",
  *       "tripid": 1,
  *       "tripName": "trip_1",
  *       "tripDescription": "This is the description of the trip_1.",
- *       "tripCreationDate": "2018-10-31T17:32:52.449Z",
- *       "tripLastModDate": "2018-10-31T17:32:52.449Z",
+ *       "tripCreationDate": "2018-11-05T12:15:46.359Z",
+ *       "tripLastModDate": "2018-11-05T12:15:46.359Z",
  *       "tripCreator": 1
  *     }
  */
@@ -265,27 +265,25 @@ router.get('/:tripid', loadTripFromParamsMiddleware, function (req, res, next) {
  *
  *     [
  *       {
- *         "_id": "5bdb19ad8cee2d018c55e6fa",
+ *         "_id": "5be0362d7a0f46001685a341",
  *         "placeid": 1,
  *         "placeName": "place_1",
  *         "placeDescription": "This is the description of the place_1.",
  *         "placePicture": "https://muggli.one/heig/webs/missing-img.png",
- *         "placeCreationDate": "2018-11-01T15:20:13.951Z",
- *         "placeLastModDate": "2018-11-01T15:20:13.951Z",
- *         "placeLatitude": 0,
- *         "placeLongitude": 0,
+ *         "placeCreationDate": "2018-11-05T12:23:09.951Z",
+ *         "placeLastModDate": "2018-11-05T12:23:09.951Z",
+ *         "location": {"type": "Point", "coordinates" : [-122.5, 37.7]}, 
  *         "placeCorrTrip": 1
  *       },
  *       {
- *         "_id": "5bdb1a808cee2d018c55e6fc",
+ *         "_id": "5be036d27a0f46001685a342",
  *         "placeid": 2,
  *         "placeName": "place_2",
  *         "placeDescription": "This is the description of the place_2.",
  *         "placePicture": "https://muggli.one/heig/webs/missing-img.png",
- *         "placeCreationDate": "2018-11-01T15:23:44.008Z",
- *         "placeLastModDate": "2018-11-01T15:23:44.008Z",
- *         "placeLatitude": 0,
- *         "placeLongitude": 0,
+ *         "placeCreationDate": "2018-11-05T12:25:54.693Z",
+ *         "placeLastModDate": "2018-11-05T12:25:54.693Z",
+ *         "location": {"type": "Point", "coordinates" : [-122.5, 37.7]}, 
  *         "placeCorrTrip": 1
  *       }
  *     ]
@@ -330,12 +328,12 @@ router.get('/:tripid/places', function (req, res, next) {
  *     Content-Type: application/json
  *
  *     {
- *       "_id": "5bd9e744e80f0065a0c7fcd6",
+ *       "_id": "5be034727a0f46001685a33e",
  *       "tripid": 1,
  *       "tripName": "trip_1_new",
  *       "tripDescription": "This is the description of the trip_1.",
- *       "tripCreationDate": "2018-10-31T17:32:52.449Z",
- *       "tripLastModDate": "2018-11-31T20:15:10.613Z",
+ *       "tripCreationDate": "2018-11-05T12:15:46.359Z",
+ *       "tripLastModDate": "2018-11-05T12:17:13.022Z",
  *       "tripCreator": 1
  *     }
  */
@@ -402,12 +400,12 @@ router.patch('/:tripid', utils.requireJson, loadTripFromParamsMiddleware, functi
  *     Content-Type: application/json
  *
  *     {
- *       "_id": "5bd9e744e80f0065a0c7fcd6",
+ *       "_id": "5be034727a0f46001685a33e",
  *       "tripid": 1,
  *       "tripName": "trip_1_new",
  *       "tripDescription": "This is the new description of the trip_1.",
- *       "tripCreationDate": "2018-10-31T17:32:52.449Z",
- *       "tripLastModDate": "2018-11-31T20:15:10.613Z",
+ *       "tripCreationDate": "2018-11-05T12:15:46.359Z",
+ *       "tripLastModDate": "2018-11-05T12:17:13.022Z",
  *       "tripCreator": 2
  *     }
  */

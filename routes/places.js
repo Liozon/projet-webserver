@@ -30,7 +30,7 @@ const secretKey = process.env.JWT_KEY || 'dfjsf';
  *       "placeName": "place_1",
  *       "placeDescription": "This is the description of the place_1.",
  *       "placeCorrTrip": 1,
- *        "location": {
+ *       "location": {
  *           "type": "Point",
  *           "coordinates": [6.63, 46.52]
  *       }
@@ -42,14 +42,14 @@ const secretKey = process.env.JWT_KEY || 'dfjsf';
  *     Location: https://comem-webserv-2018-2019-e.herokuapp.com/places/1
  *
  *     {
- *       "_id": "5bdb19ad8cee2d018c55e6fa",
+ *       "_id": "5be0362d7a0f46001685a341",
  *       "placeid": 1,
  *       "placeName": "place_1",
  *       "placeDescription": "This is the description of the place_1.",
  *       "placePicture": "https://muggli.one/heig/webs/missing-img.png",
- *       "placeCreationDate": "2018-11-01T15:20:13.951Z",
- *       "placeLastModDate": "2018-11-01T15:20:13.951Z",
- *       "location": {"type": "Point", "coordinates" : [-122.5,                 37.7]}, 
+ *       "placeCreationDate": "2018-11-05T12:23:09.951Z",
+ *       "placeLastModDate": "2018-11-05T12:23:09.951Z",
+ *       "location": {"type": "Point", "coordinates" : [6.63, 46.52]}, 
  *       "placeCorrTrip": 1    
  *     }
  */
@@ -92,39 +92,36 @@ router.post('/', utils.authenticate, utils.requireJson, function (req, res, next
  *
  *     [
  *       {
- *         "_id": "5bdb19ad8cee2d018c55e6fa",
+ *         "_id": "5be0362d7a0f46001685a341",
  *         "placeid": 1,
  *         "placeName": "place_1",
  *         "placeDescription": "This is the description of the place_1.",
  *         "placePicture": "https://muggli.one/heig/webs/missing-img.png",
- *         "placeCreationDate": "2018-11-01T15:20:13.951Z",
- *         "placeLastModDate": "2018-11-01T15:20:13.951Z",
- *         "placeLatitude": 0,
- *         "placeLongitude": 0,
- *         "placeCorrTrip": 1
+ *         "placeCreationDate": "2018-11-05T12:23:09.951Z",
+ *         "placeLastModDate": "2018-11-05T12:23:09.951Z",
+ *         "location": {"type": "Point", "coordinates" : [6.63, 46.52]}, 
+ *         "placeCorrTrip": 1 
  *       },
  *       {
- *         "_id": "5bdb1a808cee2d018c55e6fc",
+ *         "_id": "5be036d27a0f46001685a342",
  *         "placeid": 2,
  *         "placeName": "place_2",
  *         "placeDescription": "This is the description of the place_2.",
  *         "placePicture": "https://muggli.one/heig/webs/missing-img.png",
- *         "placeCreationDate": "2018-11-01T15:23:44.008Z",
- *         "placeLastModDate": "2018-11-01T15:23:44.008Z",
- *         "placeLatitude": 0,
- *         "placeLongitude": 0,
+ *         "placeCreationDate": "2018-11-05T12:25:54.693Z",
+ *         "placeLastModDate": "2018-11-05T12:25:54.693Z",
+ *         "location": {"type": "Point", "coordinates" : [6.63, 46.52]}, 
  *         "placeCorrTrip": 1
  *       },
  *       {
- *         "_id": "5bdb1a888cee2d018c55e6fd",
+ *         "_id": "5be037007a0f46001685a343",
  *         "placeid": 3,
  *         "placeName": "place_3",
  *         "placeDescription": "This is the description of the place_3.",
  *         "placePicture": "https://muggli.one/heig/webs/missing-img.png",
- *         "placeCreationDate": "2018-11-01T15:23:52.043Z",
- *         "placeLastModDate": "2018-11-01T15:23:52.043Z",
- *         "placeLatitude": 0,
- *         "placeLongitude": 0,
+ *         "placeCreationDate": "2018-11-05T12:26:40.020Z",
+ *         "placeLastModDate": "2018-11-05T12:26:40.020Z",
+ *         "location": {"type": "Point", "coordinates" : [6.63, 46.52]}, 
  *         "placeCorrTrip": 2
  *       }
  *     ]
@@ -136,15 +133,14 @@ router.post('/', utils.authenticate, utils.requireJson, function (req, res, next
  *
  *     [
  *       {
- *         "_id": "5bdb1a888cee2d018c55e6fd",
+ *         "_id": "5be037007a0f46001685a343",
  *         "placeid": 3,
  *         "placeName": "place_3",
  *         "placeDescription": "This is the description of the place_3.",
  *         "placePicture": "https://muggli.one/heig/webs/missing-img.png",
- *         "placeCreationDate": "2018-11-01T15:23:52.043Z",
- *         "placeLastModDate": "2018-11-01T15:23:52.043Z",
- *         "placeLatitude": 0,
- *         "placeLongitude": 0,
+ *         "placeCreationDate": "2018-11-05T12:26:40.020Z",
+ *         "placeLastModDate": "2018-11-05T12:26:40.020Z",
+ *         "location": {"type": "Point", "coordinates" : [6.63, 46.52]}, 
  *         "placeCorrTrip": 2
  *       }
  *     ]
@@ -212,15 +208,14 @@ router.get('/', function (req, res, next) {
  *     Location: https://comem-webserv-2018-2019-e.herokuapp.com/places/1
  *
  *     {
- *       "_id": "5bdb19ad8cee2d018c55e6fa",
+ *       "_id": "5be0362d7a0f46001685a341",
  *       "placeid": 1,
  *       "placeName": "place_1",
  *       "placeDescription": "This is the description of the place_1.",
  *       "placePicture": "https://muggli.one/heig/webs/missing-img.png",
- *       "placeCreationDate": "2018-11-01T15:20:13.951Z",
- *       "placeLastModDate": "2018-11-01T15:20:13.951Z",
- *       "placeLatitude": 0,
- *       "placeLongitude": 0,
+ *       "placeCreationDate": "2018-11-05T12:23:09.951Z",
+ *       "placeLastModDate": "2018-11-05T12:23:09.951Z",
+ *       "location": {"type": "Point", "coordinates" : [6.63, 46.52]}, 
  *       "placeCorrTrip": 1 
  *     }
  */
@@ -256,15 +251,14 @@ router.get('/:placeid', loadPlaceFromParamsMiddleware, function (req, res, next)
  *     Content-Type: application/json
  *
  *     {
- *       "_id": "5bdb19ad8cee2d018c55e6fa",
+ *       "_id": "5be0362d7a0f46001685a341",
  *       "placeid": 1,
  *       "placeName": "place_1_new",
  *       "placeDescription": "This is the description of the place_1.",
  *       "placePicture": "https://muggli.one/heig/webs/missing-img.png",
- *       "placeCreationDate": "2018-11-01T15:20:13.951Z",
- *       "placeLastModDate": "2018-11-01T15:28:25.243Z",
- *       "placeLatitude": 0,
- *       "placeLongitude": 0,
+ *       "placeCreationDate": "2018-11-05T12:23:09.951Z",
+ *       "placeLastModDate": "2018-11-05T12:26:40.020Z",
+ *       "location": {"type": "Point", "coordinates" : [6.63, 46.52]}, 
  *       "placeCorrTrip": 1 
  *     }
  */
@@ -321,15 +315,14 @@ router.patch('/:placeid', utils.requireJson, loadPlaceFromParamsMiddleware, func
  *     Content-Type: application/json
  *
  *     {
- *       "_id": "5bdb19ad8cee2d018c55e6fa",
+ *       "_id": "5be0362d7a0f46001685a341",
  *       "placeid": 1,
  *       "placeName": "place_1_new",
  *       "placeDescription": "This is the new description of the place_1.",
  *       "placePicture": "https://muggli.one/heig/webs/missing-img.png",
- *       "placeCreationDate": "2018-11-01T15:20:13.951Z",
- *       "placeLastModDate": "2018-11-01T15:28:25.243Z",
- *       "placeLatitude": 0,
- *       "placeLongitude": 0,
+ *       "placeCreationDate": "2018-11-05T12:23:09.951Z",
+ *       "placeLastModDate": "2018-11-05T12:26:40.020Z",
+ *       "location": {"type": "Point", "coordinates" : [6.63, 46.52]}, 
  *       "placeCorrTrip": 2 
  *     }
  */
@@ -431,8 +424,7 @@ function placeNotFound(res, placeid) {
  * @apiParam (Request body) {String} [placeDescription] The description of the place
  * @apiParam (Request body) {Number} placeCorrTrip The tripid of the corresponding trip to the place
  * @apiParam (Request body) {String} [placePicture] The picture of the place with default value "https://muggli.one/heig/webs/missing-img.png"
- * @apiParam (Request body) {Number} placeLatitude The latitude of the place with default value 0.000000
- * @apiParam (Request body) {Number} placeLongitude The longitude of the place with default value 0.000000
+ * @apiParam (Request body) {Point} location Coordinates of the places location with default value [-122.5, 37.7]
  */
 
 /**
@@ -444,8 +436,7 @@ function placeNotFound(res, placeid) {
  * @apiSuccess (Response body) {String} placePicture The picture of the place, default value "https://muggli.one/heig/webs/missing-img.png"
  * @apiSuccess (Response body) {String} placeCreationDate The date at which the place was created with default value Date.now 
  * @apiSuccess (Response body) {Date} placeLastModDate The date at which the place was modified with default value Date.now
- * @apiSuccess (Response body) {Number} placeLatitude The latitude of the place
- * @apiSuccess (Response body) {Number} placeLongitude The longitude of the place
+ * @apiSuccess (Response body) {Point} location Coordinates of the places location with default value [-122.5, 37.7]
  * @apiSuccess (Response body) {Number} placeCorrTrip The tripid of the corresponding trip to the place
  */
 

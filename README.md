@@ -56,6 +56,7 @@ This API groups the following tables:
     
     - /trips/:tripid/places ((get all places of a trip))
     - /trips?tripCreator=:tripCreator ((get all trips of a user))
+    - /places?placeCorrTrip=:placeCorrTrip ((get all places of a trip))
 
 
 - POST (Create a new resource)
