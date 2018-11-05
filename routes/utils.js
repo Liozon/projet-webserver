@@ -1,5 +1,9 @@
 const config = require('../config');
 const formatLinkHeader = require('format-link-header');
+const jwt = require("jsonwebtoken");
+
+//Retrieve the secret key from our configuration
+const secretKey = process.env.JWT_KEY || 'dfjsf';
 
 /**
  * Responds with 415 Unsupported Media Type if the request does not have the Content-Type application/json.

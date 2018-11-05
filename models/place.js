@@ -26,10 +26,6 @@ const placeSchema = new Schema({
     placeDescription: {
         type: String
     },
-    /* placeGeolocalisation: {
-        type: String,
-        coordinates: Number
-    }, */
     placePicture: {
         type: String,
         default: "https://muggli.one/heig/webs/missing-img.png"

@@ -60,11 +60,11 @@ router.post('/', utils.requireJson, function (req, res, next) {
  *     Location: https://comem-webserv-2018-2019-e.herokuapp.com/users/1
  *
  *     {
- *       "_id": "5bd8b53ffc7de055c4ca07aa",
+ *       "_id": "5be0145e53d9a90016a8ff6d",
  *       "userid": 1,
  *       "email": "user1@email.com",
- *       "password": "$2b$10$ju7qmV4h6syfEC313nJ4FeZ11Z5AM/tU6roiRIHytViwUuqdtNZgC",
- *       "registrationDate": "2018-10-30T19:47:11.613Z"
+ *       "password": "$2b$10$0DbA496hz1Fia3/2c.Sd/Oqj6hxBiDrk5t5XK5ge3ngKTPUDWwsK6",
+ *       "registrationDate": "2018-11-05T09:58:54.588Z"
  *     }
  */
 router.post('/signup', (req, res, next) => {
@@ -130,11 +130,10 @@ router.post('/signup', (req, res, next) => {
  * @apiSuccessExample 200 Ok
  *     HTTP/1.1 200 Ok
  *     Content-Type: application/json
- *     Location: https://comem-webserv-2018-2019-e.herokuapp.com/users/1
  *
  *     {
  *       "message": "Auth successful",
- *       "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQGVtYWlsLmNvbSIsInVzZXJpZCI6MSwiaWF0IjoxNTQwOTMwMjE1LCJleHAiOjE1NDE1MzUwMTV9.TGkLNJdB1ls9gI0JhUOdPqoDzSAjqVbI0971BAY1E_o"
+ *       "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQGVtYWlsLmNvbSIsInVzZXJpZCI6MSwiaWF0IjoxNTQxNDEyMDM1LCJleHAiOjE1NDIwMTY4MzV9.sgt0kgjVDOALiX4trNA3iuZkdS2dn6om-tWXPI8qAz0"
  *     }
  */
 router.post("/login", (req, res, next) => {
@@ -214,18 +213,18 @@ router.post("/login", (req, res, next) => {
  *
  *     [
  *       {
- *         "_id": "5bd8b53ffc7de055c4ca07aa",
+ *         "_id": "5be0145e53d9a90016a8ff6d",
  *         "userid": 1,
  *         "email": "user1@email.com",
- *         "password": "$2b$10$ju7qmV4h6syfEC313nJ4FeZ11Z5AM/tU6roiRIHytViwUuqdtNZgC",
- *         "registrationDate": "2018-10-30T19:47:11.613Z"
+ *         "password": "$2b$10$0DbA496hz1Fia3/2c.Sd/Oqj6hxBiDrk5t5XK5ge3ngKTPUDWwsK6",
+ *         "registrationDate": "2018-11-05T09:58:54.588Z"
  *       },
  *       {
- *         "_id": "5bd8c61c580be55df4452243",
+ *         "_id": "5be0150a53d9a90016a8ff6e",
  *         "userid": 2,
  *         "email": "user2@email.com",
- *         "password": "$2b$10$NWz7jXlfvPH1Bqk09QriSewmnCt780wThfqZQGTcQvMp9MUP9QjwS",
- *         "registrationDate": "2018-10-30T20:59:08.422Z"
+ *         "password": "$2b$10$dXHbPbxQxiKasRnKc7x6tuT9WTsIxqToJM2I8CzdUJTJGO2.PUIse",
+ *         "registrationDate": "2018-11-05T10:01:46.546Z"
  *       }
  *     ]
  */
@@ -259,11 +258,11 @@ router.get('/', function (req, res, next) {
  *     Location: https://comem-webserv-2018-2019-e.herokuapp.com/users/1
  *
  *     {
- *       "_id": "5bd8b53ffc7de055c4ca07aa",
+ *       "_id": "5be0145e53d9a90016a8ff6d",
  *       "userid": 1,
  *       "email": "user1@email.com",
- *       "password": "$2b$10$ju7qmV4h6syfEC313nJ4FeZ11Z5AM/tU6roiRIHytViwUuqdtNZgC",
- *       "registrationDate": "2018-10-30T19:47:11.613Z"
+ *       "password": "$2b$10$0DbA496hz1Fia3/2c.Sd/Oqj6hxBiDrk5t5XK5ge3ngKTPUDWwsK6",
+ *       "registrationDate": "2018-11-05T09:58:54.588Z"
  *     }
  */
 router.get('/:userid', loadUserFromParamsMiddleware, function (req, res, next) {
@@ -300,7 +299,7 @@ router.get('/:userid', loadUserFromParamsMiddleware, function (req, res, next) {
  *     Content-Type: application/json
  *
  *     {
- *       "email": "user1@email.com"
+ *       "email": "user1new@email.com"
  *     }
  *
  * @apiSuccessExample 200 OK
@@ -308,11 +307,11 @@ router.get('/:userid', loadUserFromParamsMiddleware, function (req, res, next) {
  *     Content-Type: application/json
  *
  *     {
- *       "_id": "5bd8b53ffc7de055c4ca07aa",
+ *       "_id": "5be0145e53d9a90016a8ff6d",
  *       "userid": 1,
- *       "email": "user1@email.com",
- *       "password": "$2b$10$ju7qmV4h6syfEC313nJ4FeZ11Z5AM/tU6roiRIHytViwUuqdtNZgC",
- *       "registrationDate": "2018-10-30T19:47:11.613Z"
+ *       "email": "user1new@email.com",
+ *       "password": "$2b$10$0DbA496hz1Fia3/2c.Sd/Oqj6hxBiDrk5t5XK5ge3ngKTPUDWwsK6",
+ *       "registrationDate": "2018-11-05T09:58:54.588Z"
  *     }
  */
 router.patch('/:userid', utils.requireJson, loadUserFromParamsMiddleware, function (req, res, next) {
@@ -369,11 +368,11 @@ router.patch('/:userid', utils.requireJson, loadUserFromParamsMiddleware, functi
  *     Content-Type: application/json
  *
  *     {
- *       "_id": "5bd8b53ffc7de055c4ca07aa",
+ *       "_id": "5be0145e53d9a90016a8ff6d",
  *       "userid": 1,
  *       "email": "user1new@email.com",
  *       "password": "$2b$10$f1ZgJx7NRbXOud0PJ01K1ul5iWd659E03ds4Mbl4N8ysNn99vw7Ge",
- *       "registrationDate": "2018-10-30T19:47:11.613Z"
+ *       "registrationDate": "2018-11-05T09:58:54.588Z"
  *     }
  */
 router.put('/:userid', utils.requireJson, loadUserFromParamsMiddleware, function (req, res, next) {
