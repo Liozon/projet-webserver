@@ -10,7 +10,7 @@ define({ "api": [
     "examples": [
       {
         "title": "Example",
-        "content": "POST /places HTTP/1.1\nContent-Type: application/json\n\n{\n  \"placeName\": \"place_1\",\n  \"placeDescription\": \"This is the description of the place_1.\",\n  \"placeCorrTrip\": 1\n}",
+        "content": "POST /places HTTP/1.1\nContent-Type: application/json\n\n{\n  \"placeName\": \"place_1\",\n  \"placeDescription\": \"This is the description of the place_1.\",\n  \"placeCorrTrip\": 1,\n   \"location\": {\n      \"type\": \"Point\",\n      \"coordinates\": [6.63, 46.52]\n  }\n}",
         "type": "json"
       }
     ],
@@ -18,7 +18,7 @@ define({ "api": [
       "examples": [
         {
           "title": "201 Created",
-          "content": "HTTP/1.1 201 Created\nContent-Type: application/json\nLocation: https://comem-webserv-2018-2019-e.herokuapp.com/places/1\n\n{\n  \"_id\": \"5bdb19ad8cee2d018c55e6fa\",\n  \"placeid\": 1,\n  \"placeName\": \"place_1\",\n  \"placeDescription\": \"This is the description of the place_1.\",\n  \"placePicture\": \"https://muggli.one/heig/webs/missing-img.png\",\n  \"placeCreationDate\": \"2018-11-01T15:20:13.951Z\",\n  \"placeLastModDate\": \"2018-11-01T15:20:13.951Z\",\n  \"placeLatitude\": 0,\n  \"placeLongitude\": 0,\n  \"placeCorrTrip\": 1    \n}",
+          "content": "HTTP/1.1 201 Created\nContent-Type: application/json\nLocation: https://comem-webserv-2018-2019-e.herokuapp.com/places/1\n\n{\n  \"_id\": \"5bdb19ad8cee2d018c55e6fa\",\n  \"placeid\": 1,\n  \"placeName\": \"place_1\",\n  \"placeDescription\": \"This is the description of the place_1.\",\n  \"placePicture\": \"https://muggli.one/heig/webs/missing-img.png\",\n  \"placeCreationDate\": \"2018-11-01T15:20:13.951Z\",\n  \"placeLastModDate\": \"2018-11-01T15:20:13.951Z\",\n  \"location\": {\"type\": \"Point\", \"coordinates\" : [-122.5,                 37.7]}, \n  \"placeCorrTrip\": 1    \n}",
           "type": "json"
         }
       ],
@@ -601,7 +601,7 @@ define({ "api": [
       "examples": [
         {
           "title": "200 OK",
-          "content": "HTTP/1.1 200 OK\nContent-Type: application/json\nLocation: https://comem-webserv-2018-2019-e.herokuapp.com/places/page=1&pageSize=10\n\n[\n  {\n    \"_id\": \"5bdb19ad8cee2d018c55e6fa\",\n    \"placeid\": 1,\n    \"placeName\": \"place_1\",\n    \"placeDescription\": \"This is the description of the place_1.\",\n    \"placePicture\": \"https://muggli.one/heig/webs/missing-img.png\",\n    \"placeCreationDate\": \"2018-11-01T15:20:13.951Z\",\n    \"placeLastModDate\": \"2018-11-01T15:20:13.951Z\",\n    \"placeLatitude\": 0,\n    \"placeLongitude\": 0,\n    \"placeCorrTrip\": 1\n  },\n  {\n    \"_id\": \"5bdb1a808cee2d018c55e6fc\",\n    \"placeid\": 2,\n    \"placeName\": \"place_2\",\n    \"placeDescription\": \"This is the description of the place_2.\",\n    \"placePicture\": \"https://muggli.one/heig/webs/missing-img.png\",\n    \"placeCreationDate\": \"2018-11-01T15:23:44.008Z\",\n    \"placeLastModDate\": \"2018-11-01T15:23:44.008Z\",\n    \"placeLatitude\": 0,\n    \"placeLongitude\": 0,\n    \"placeCorrTrip\": 1\n  },\n  {\n    \"_id\": \"5bdb1a888cee2d018c55e6fd\",\n    \"placeid\": 3,\n    \"placeName\": \"place_3\",\n    \"placeDescription\": \"This is the description of the place_3.\",\n    \"placePicture\": \"https://muggli.one/heig/webs/missing-img.png\",\n    \"placeCreationDate\": \"2018-11-01T15:23:52.043Z\",\n    \"placeLastModDate\": \"2018-11-01T15:23:52.043Z\",\n    \"placeLatitude\": 0,\n    \"placeLongitude\": 0,\n    \"placeCorrTrip\": 2\n  }\n]",
+          "content": "HTTP/1.1 200 OK\nContent-Type: application/json\nLocation: https://comem-webserv-2018-2019-e.herokuapp.com/places?page=1&pageSize=10\n\n[\n  {\n    \"_id\": \"5bdb19ad8cee2d018c55e6fa\",\n    \"placeid\": 1,\n    \"placeName\": \"place_1\",\n    \"placeDescription\": \"This is the description of the place_1.\",\n    \"placePicture\": \"https://muggli.one/heig/webs/missing-img.png\",\n    \"placeCreationDate\": \"2018-11-01T15:20:13.951Z\",\n    \"placeLastModDate\": \"2018-11-01T15:20:13.951Z\",\n    \"placeLatitude\": 0,\n    \"placeLongitude\": 0,\n    \"placeCorrTrip\": 1\n  },\n  {\n    \"_id\": \"5bdb1a808cee2d018c55e6fc\",\n    \"placeid\": 2,\n    \"placeName\": \"place_2\",\n    \"placeDescription\": \"This is the description of the place_2.\",\n    \"placePicture\": \"https://muggli.one/heig/webs/missing-img.png\",\n    \"placeCreationDate\": \"2018-11-01T15:23:44.008Z\",\n    \"placeLastModDate\": \"2018-11-01T15:23:44.008Z\",\n    \"placeLatitude\": 0,\n    \"placeLongitude\": 0,\n    \"placeCorrTrip\": 1\n  },\n  {\n    \"_id\": \"5bdb1a888cee2d018c55e6fd\",\n    \"placeid\": 3,\n    \"placeName\": \"place_3\",\n    \"placeDescription\": \"This is the description of the place_3.\",\n    \"placePicture\": \"https://muggli.one/heig/webs/missing-img.png\",\n    \"placeCreationDate\": \"2018-11-01T15:23:52.043Z\",\n    \"placeLastModDate\": \"2018-11-01T15:23:52.043Z\",\n    \"placeLatitude\": 0,\n    \"placeLongitude\": 0,\n    \"placeCorrTrip\": 2\n  }\n]",
           "type": "json"
         },
         {
@@ -1298,12 +1298,12 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/trips/agg/:tripid",
-    "title": "Retrieve aggregata datas of a trip",
+    "url": "/trips/:tripid/places",
+    "title": "Retrieve all places of a trip",
     "name": "RetrieveAggTrip",
     "group": "Trip",
     "version": "1.0.0",
-    "description": "<p>Retrieves aggregata dateas of a trip.</p>",
+    "description": "<p>Retrieve all places of a trip</p>",
     "examples": [
       {
         "title": "Example",
@@ -1315,7 +1315,7 @@ define({ "api": [
       "examples": [
         {
           "title": "200 OK",
-          "content": "HTTP/1.1 200 OK\nContent-Type: application/json\nLocation: https://comem-webserv-2018-2019-e.herokuapp.com/trips/agg/1\n\n[\n  {\n    \"_id\": \"5bdb19ad8cee2d018c55e6fa\",\n    \"placeid\": 1,\n    \"placeName\": \"place_1\",\n    \"placeDescription\": \"This is the description of the place_1.\",\n    \"placePicture\": \"https://muggli.one/heig/webs/missing-img.png\",\n    \"placeCreationDate\": \"2018-11-01T15:20:13.951Z\",\n    \"placeLastModDate\": \"2018-11-01T15:20:13.951Z\",\n    \"placeLatitude\": 0,\n    \"placeLongitude\": 0,\n    \"placeCorrTrip\": 1\n  },\n  {\n    \"_id\": \"5bdb1a808cee2d018c55e6fc\",\n    \"placeid\": 2,\n    \"placeName\": \"place_2\",\n    \"placeDescription\": \"This is the description of the place_2.\",\n    \"placePicture\": \"https://muggli.one/heig/webs/missing-img.png\",\n    \"placeCreationDate\": \"2018-11-01T15:23:44.008Z\",\n    \"placeLastModDate\": \"2018-11-01T15:23:44.008Z\",\n    \"placeLatitude\": 0,\n    \"placeLongitude\": 0,\n    \"placeCorrTrip\": 1\n  }\n]",
+          "content": "HTTP/1.1 200 OK\nContent-Type: application/json\nLocation: https://comem-webserv-2018-2019-e.herokuapp.com/trips/1/places\n\n[\n  {\n    \"_id\": \"5bdb19ad8cee2d018c55e6fa\",\n    \"placeid\": 1,\n    \"placeName\": \"place_1\",\n    \"placeDescription\": \"This is the description of the place_1.\",\n    \"placePicture\": \"https://muggli.one/heig/webs/missing-img.png\",\n    \"placeCreationDate\": \"2018-11-01T15:20:13.951Z\",\n    \"placeLastModDate\": \"2018-11-01T15:20:13.951Z\",\n    \"placeLatitude\": 0,\n    \"placeLongitude\": 0,\n    \"placeCorrTrip\": 1\n  },\n  {\n    \"_id\": \"5bdb1a808cee2d018c55e6fc\",\n    \"placeid\": 2,\n    \"placeName\": \"place_2\",\n    \"placeDescription\": \"This is the description of the place_2.\",\n    \"placePicture\": \"https://muggli.one/heig/webs/missing-img.png\",\n    \"placeCreationDate\": \"2018-11-01T15:23:44.008Z\",\n    \"placeLastModDate\": \"2018-11-01T15:23:44.008Z\",\n    \"placeLatitude\": 0,\n    \"placeLongitude\": 0,\n    \"placeCorrTrip\": 1\n  }\n]",
           "type": "json"
         }
       ],
@@ -1562,7 +1562,7 @@ define({ "api": [
       "examples": [
         {
           "title": "200 OK",
-          "content": "HTTP/1.1 200 OK\nContent-Type: application/json\nLocation: https://comem-webserv-2018-2019-e.herokuapp.com/trips/page=1&pageSize=10\n\n[\n  {\n    \"_id\": \"5bd9e744e80f0065a0c7fcd6\",\n    \"tripid\": 1,\n    \"tripName\": \"trip_1\",\n    \"tripDescription\": \"This is the description of the trip_1.\",\n    \"tripCreationDate\": \"2018-10-31T17:32:52.449Z\",\n    \"tripLastModDate\": \"2018-10-31T17:32:52.449Z\",\n    \"tripCreator\": 1\n  },\n  {\n    \"_id\": \"5bd6bd0637fec753c40a89bb\",\n    \"tripid\": 2,\n    \"tripName\": \"trip_2\",\n    \"tripDescription\": \"This is the description of the trip_2.\",\n    \"tripCreationDate\": \"2018-10-29T07:55:50.995Z\",\n    \"tripLastModDate\": \"2018-10-29T07:55:50.995Z\",\n    \"tripCreator\": 1\n  },\n  {\n    \"_id\": \"5bd6cbe57aa3be18a856dfbf\",\n    \"tripid\": 3,\n    \"tripName\": \"trip_3\",\n    \"tripDescription\": \"This is the description of the trip_3.\",\n    \"tripCreationDate\": \"2018-10-29T08:59:17.167Z\",\n    \"tripLastModDate\": \"2018-10-29T08:59:17.167Z\",\n    \"tripCreator\": 2\n  }\n]",
+          "content": "HTTP/1.1 200 OK\nContent-Type: application/json\nLocation: https://comem-webserv-2018-2019-e.herokuapp.com/trips?page=1&pageSize=10\n\n[\n  {\n    \"_id\": \"5bd9e744e80f0065a0c7fcd6\",\n    \"tripid\": 1,\n    \"tripName\": \"trip_1\",\n    \"tripDescription\": \"This is the description of the trip_1.\",\n    \"tripCreationDate\": \"2018-10-31T17:32:52.449Z\",\n    \"tripLastModDate\": \"2018-10-31T17:32:52.449Z\",\n    \"tripCreator\": 1\n  },\n  {\n    \"_id\": \"5bd6bd0637fec753c40a89bb\",\n    \"tripid\": 2,\n    \"tripName\": \"trip_2\",\n    \"tripDescription\": \"This is the description of the trip_2.\",\n    \"tripCreationDate\": \"2018-10-29T07:55:50.995Z\",\n    \"tripLastModDate\": \"2018-10-29T07:55:50.995Z\",\n    \"tripCreator\": 1\n  },\n  {\n    \"_id\": \"5bd6cbe57aa3be18a856dfbf\",\n    \"tripid\": 3,\n    \"tripName\": \"trip_3\",\n    \"tripDescription\": \"This is the description of the trip_3.\",\n    \"tripCreationDate\": \"2018-10-29T08:59:17.167Z\",\n    \"tripLastModDate\": \"2018-10-29T08:59:17.167Z\",\n    \"tripCreator\": 2\n  }\n]",
           "type": "json"
         },
         {

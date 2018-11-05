@@ -33,64 +33,54 @@ This API groups the following tables:
 | placeid               |
 | placeName             |
 | placeDescription      |
-| (placeGeolocalisation)|
 | placePicture          |
 | placeCreationDate     |
 | placeLastModDate      |
-| placeLatitude         |
-| placeLongitude        |
+| location              |
 | placeCorrTrip         |
 
     
     
 -----------------------------------------------------------------
 
-Routes :
+### Routes :
 
 - GET (Retrieve data)
     - /users ((get all users))
     - /trips ((get all trips))
     - /places ((get all places))
     
-    - /user/userid ((get one user))
-    - /trip/tripid ((get one trip))
-    - /place/placeid ((get one place))
+    - /users/:userid ((get one user))
+    - /trips/:tripid ((get one trip))
+    - /places/:placeid ((get one place))
     
-    - /user/:userid/trips ((get all trips of a user))
-    - /trip/:tripid/places ((get all places of a trip))
+    - /trips/:tripid/places ((get all places of a trip))
+    - /trips?tripCreator=:tripCreator ((get all trips of a user))
 
 
 - POST (Create a new resource)
-    - /user
-    - /trip
-    - /place
-
-
-- DELETE (Delete a resource)
-    - /user/userid
-    - /trip/tripid
-    - /place/placeid
+    - /users/signup ((Create a user))
+    - /users/login ((Login a user))
+    - /trips
+    - /places
     
 
 - PATCH (Partially modify an existing resource)
-    - /user/userid
-    - /trip/tripid
-    - /place/placeid
+    - /users/:userid
+    - /trips/:tripid
+    - /places/:placeid
 
     
 - PUT (Modify an existing resource complet)
-    - /user/userid
-    - /trip/tripid
-    - /place/placeid
+    - /users/:userid
+    - /trips/:tripid
+    - /places/:placeid
 
 
------------------------------------------------------------------
-
-ToDo:
-
-- REST: HTTP methods, headers and status codes, consistent URL hierarchy and/or naming structure ((Céline))
-
-- Reread Evaluation constraints ((Céline))
+- DELETE (Delete a resource)
+    - /users/:userid
+    - /trips/:tripid
+    - /places/:placeid
 
 
 -----------------------------------------------------------------
@@ -102,5 +92,3 @@ QUESTIONS :
 - models/place.js: How to use correct timezone for date.now in the Schema?
 
 - Tout fonctionne sans démarrer les programmes mongo.exe et mongod.exe. Est-ce que c'est correct ? on peut pas se déconnecter à la base de données sans mongo.exe, le programme devait tourner en arrière plan (Steffi)
-
-- Heroku: 'https://comem-webserv-2018-2019-e.herokuapp.com' ne fonctionne pas comme 'http://localhost:3000/'! Update?
