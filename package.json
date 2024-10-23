@@ -13,7 +13,7 @@
     "bcrypt": "^5.0.1",
     "cookie-parser": "~1.4.6",
     "debug": "^4.3.4",
-    "express": "~4.19.2",
+    "express": "~4.20.0",
     "format-link-header": "^3.1.1",
     "http-errors": "~2.0.0",
     "jade": "~1.11.0",
