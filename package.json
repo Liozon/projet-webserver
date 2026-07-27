@@ -11,17 +11,17 @@
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
-    "cookie-parser": "~1.4.6",
+    "cookie-parser": "~1.4.7",
     "debug": "^4.3.4",
-    "express": "~4.21.1",
+    "express": "~4.22.2",
     "format-link-header": "^3.1.1",
     "http-errors": "~2.0.0",
     "jade": "~1.11.0",
     "jsonwebtoken": "^9.0.0",
     "mongodb": "^4.17.0",
-    "mongoose": "^6.11.3",
+    "mongoose": "^6.13.10",
     "mongoose-timezone": "^1.3.0",
-    "morgan": "~1.10.0"
+    "morgan": "~1.11.0"
   },
   "devDependencies": {
     "apidoc": "^0.52.0"
